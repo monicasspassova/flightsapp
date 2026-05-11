@@ -1,5 +1,15 @@
 -- Add all your SQL setup statements here. 
 
+CREATE TABLE Users_mspass(username VARCHAR(20) PRIMARY KEY NOT NULL, 
+                          password BYTEA NOT NULL, 
+                          balance INT NOT NULL);
+
+CREATE TABLE Reservations_mspass(rid INT PRIMARY KEY NOT NULL, 
+                                userid VARCHAR(20) REFERENCES Users_mspass(username) NOT NULL, 
+                                paid INT NOT NULL, 
+                                fid1 INT NOT NULL, 
+                                fid2 INT);
+
 -- When we test your submission, you can assume that the following base
 -- tables have been created and loaded with data.  Do not alter the
 -- following tables' contents or schema in your code.
