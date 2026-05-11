@@ -25,7 +25,14 @@ public class Query extends QueryAbstract {
     + "      AND n.mfr_mdl_code = a.atid"
     + "      AND fid = ?";
   private PreparedStatement flightCapacityStmt;
+  
+  private static final String CLEAR_TABLES_SQL = 
+    "DELETE
+     FROM Users_mspass, Reservations_mspass";
+  private PreparedStatement clearTablesStmt;
 
+
+    
   //
   // Instance variables
   //
@@ -43,6 +50,8 @@ public class Query extends QueryAbstract {
   public void clearTables() {
     try {
       // TODO: YOUR CODE HERE
+      clearTablesStmt.executeQuery();
+
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -59,6 +68,9 @@ public class Query extends QueryAbstract {
     flightCapacityStmt = conn.prepareStatement(FLIGHT_CAPACITY_SQL);
 
     // TODO: YOUR CODE HERE
+
+    clearTablesStmt = conn.prepareStatement(CLEAR_TABLES_SQL);
+    
   }
 
   /* See QueryAbstract.java for javadoc */
