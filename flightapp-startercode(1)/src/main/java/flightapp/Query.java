@@ -27,8 +27,8 @@ public class Query extends QueryAbstract {
   private PreparedStatement flightCapacityStmt;
   
   private static final String CLEAR_TABLES_SQL = 
-    "DELETE
-     FROM Users_mspass, Reservations_mspass";
+    "DELETE " + 
+    "FROM Users_mspass, Reservations_mspass";
   private PreparedStatement clearTablesStmt;
 
 
