@@ -86,7 +86,9 @@ public class Query extends QueryAbstract {
     clearTablesStmt = conn.prepareStatement(CLEAR_TABLES_SQL);
     getPassStmt = conn.prepareStatement(GET_PASS_SQL);
     checkUsersStmt = conn.prepareStatement(CHECK_USERS_SQL);
-    
+    insertUserStmt = conn.prepareStatement(INSERT_USER_SQL);
+
+
   }
   
 
@@ -132,14 +134,19 @@ public class Query extends QueryAbstract {
       
       if (check.getBoolean(0)){
         return "Failed to create user\n";
-      }
-
+      }      
 
       // salt and hash pass to store in db
-
+      byte[] dbPass = PasswordUtils.saltAndHashPassword(password);
+      
       // create user and insert into table
+      insertUserStmt.setString(1, username);
+      insertUserStmt.setBytes(2, dbPass);
+      insertUserStmt.setInt(3, initAmount);
 
-      return "Failed to create user\n";
+      insertUserStmt.executeQuery();
+
+      return "Created user {@code username}\n";
 
     } catch (Exception e) {
       return "Failed to create user\n";
