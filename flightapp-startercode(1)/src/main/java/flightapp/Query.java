@@ -121,7 +121,7 @@ public class Query extends QueryAbstract {
 
       getPassStmt.setString(1, username);
       ResultSet pass = getPassStmt.executeQuery();
-      byte[] saltedHashPass = pass.getBytes(0);
+      byte[] saltedHashPass = pass.getBytes(password);
 
       if (PasswordUtils.plaintextMatchesSaltedHash(password, saltedHashPass)){
         loggedUser = username;
