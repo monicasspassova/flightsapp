@@ -47,6 +47,17 @@ public class Query extends QueryAbstract {
     "INSERT INTO Users_mspass " +
     "VALUES (?, ?, ?)";
   private PreparedStatement insertUserStmt;
+
+  private static final String ONE_HOP_SEARCH_SQL = 
+    "SELECT F.day_of_month, F.cid, F.op_carrier_flight_num, F.origin_city, F.dest_city, " +
+    "F.durations_mins, A.num_seats, F.price " +
+    "FROM Flights as F, N_Numbers as N, Aircraft_Types as A " +
+    "WHERE F.tail_num = N.n_number AND N.mfr_mdl_code = A.atid " +
+      "AND F.origin_city = ? " +
+      "AND F.dest_city = ? " +
+      "AND F.day_of_month = ? " +
+    "ORDER BY F.duration_mins ASC " +
+    "LIMIT ?";
     
   //
   // Instance variables
@@ -92,6 +103,7 @@ public class Query extends QueryAbstract {
   }
   
 
+
   /* See QueryAbstract.java for javadoc */
   public String transaction_login(String username, String password) {
     try{
@@ -131,25 +143,34 @@ public class Query extends QueryAbstract {
       // check that user not already in db (need to execute query search)
       checkUsersStmt.setString(1, username);
       ResultSet check = checkUsersStmt.executeQuery();
-      
+
+      System.out.println(check.getInt(0));
+
       if (check.getBoolean(0)){
         return "Failed to create user\n";
       }      
 
       // salt and hash pass to store in db
       byte[] dbPass = PasswordUtils.saltAndHashPassword(password);
-      
+
+      System.out.println(dbPass);
+
+
       // create user and insert into table
       insertUserStmt.setString(1, username);
       insertUserStmt.setBytes(2, dbPass);
       insertUserStmt.setInt(3, initAmount);
 
+      System.out.println(insertUserStmt);
+
       insertUserStmt.executeQuery();
 
-      return "Created user {@code username}\n";
+      return "Created user " + username +"\n";
 
     } catch (Exception e) {
+
       return "Failed to create user\n";
+
     }
     
 
