@@ -139,7 +139,7 @@ public class Query extends QueryAbstract {
 
       // create user and insert into table
 
-
+      return "Failed to create user\n";
 
     } catch (Exception e) {
       return "Failed to create user\n";
