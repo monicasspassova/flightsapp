@@ -25,7 +25,13 @@ public class PasswordUtils {
 
     // TODO: combine the salt and the salted hash into a single byte array that
     // can be written to the database
-    return null;
+    byte[] saltedHashedPassword = new byte[salt.length + saltedHash.length];
+    
+    System.arraycopy(salt, 0, saltedHashedPassword, 0, salt.length);
+    System.arraycopy(saltedHash, 0, saltedHashedPassword, salt.length, saltedHashedPassword.length);
+
+
+    return saltedHashedPassword;
   }
 
   /**
@@ -35,7 +41,13 @@ public class PasswordUtils {
     // TODO: extract the salt from the byte array (ie, undo the logic you implemented in 
     // saltAndHashPassword), then use it to check whether the user-provided plaintext
     // password matches the password hash.
-    return false;
+    byte[] salt = new byte[saltedHashed.length - SALT_LENGTH_BYTES];
+    salt = System.arraycopy(saltedHashed, 0, salt, 0, 16);
+
+    byte[] hashedPlaintext = hashWithSalt(plaintext, salt);
+
+
+    return hashedPlaintext.equals(saltedHashed);
   }
   
   // Password hashing parameter constants.
@@ -48,7 +60,9 @@ public class PasswordUtils {
    */
   static byte[] generateSalt() {
     // TODO: implement this.
+    Random rnd = new Rnd();
     byte[] salt = new byte[SALT_LENGTH_BYTES];
+    rnd.nextBytes(salt);
     return salt;
   }
 
