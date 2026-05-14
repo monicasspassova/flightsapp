@@ -67,9 +67,19 @@ public class Query extends QueryAbstract {
 
   private static final String TWO_HOP_SEARCH_SQL = 
     "SELECT F.day_of_month, F.cid, F.op_carrier_flight_num, F.origin_city, F.dest_city, " +
-    "F.durations_mins, A.num_seats, F.price, F." +
-    "FROM Flights as F, Flights as F2, N_Numbers as N, Airfract_Types as A " +
-    "WHERE F.tail_num = N.n_number";
+    "F.duration_mins, A.num_seats, F.price, F2.cid, F2.op_carrier_flight_num, F2.origin_city, F2.dest_city, " +
+    "F2.duration_mins, A2.num_seats, F2.price" +
+    "FROM Flights as F, Flights as F2, N_Numbers as N, N_Numbers as N2, Airfract_Types as A, Aircraft_Types as A2 " +
+    "WHERE F.tail_num = N.n_number AND N.mfr_mdl_code = A.atid " +
+      "AND F2.tail_num = N2.n_number AND N2.mfr_mdl_code = A2.atid " +
+      "AND F.cancelled = 0 AND F2.cancelled = 0 " +
+      "AND F.origin_city = ? " +
+      "AND F2.dest_city = ? " +
+      "AND F.dest_city = F2.origin_city " +
+      "AND F.day_of_month = ?" +
+      "AND F.day_of_month = F2.day_of_month " +
+    "ORDER BY F.duration_mins ASC, F2.duration_mins ASC, F.fid ASC, F2.fid ASC " +
+    "LIMIT ?";
   private PreparedStatement twoHopSearchStmt;
   //
   // Instance variables
@@ -112,7 +122,8 @@ public class Query extends QueryAbstract {
     getPassStmt = conn.prepareStatement(GET_PASS_SQL);
     checkUsersStmt = conn.prepareStatement(CHECK_USERS_SQL);
     insertUserStmt = conn.prepareStatement(INSERT_USER_SQL);
-
+    oneHopSearchStmt = conn.prepareStatement(ONE_HOP_SEARCH_SQL);
+    twoHopSearchStmt = conn.prepareStatement(TWO_HOP_SEARCH_SQL);
 
   }
   
@@ -199,27 +210,39 @@ public class Query extends QueryAbstract {
 
     try {
 
-      // determine if we need to do only direct or not
-      if (directFlight){
-        
+      // get direct results first
+
+      // then if needed, get indirect
+
+      // add together, sort in ascending order, then cut off rest 
+
+      
+      // one hop itineraries
+      oneHopSearchStmt.setString(1, originCity);
+      oneHopSearchStmt.setString(2, destinationCity);
+      oneHopSearchStmt.setInt(3, dayOfMonth);
+      oneHopSearchStmt.setInt(4, numberOfItineraries);
+      ResultSet oneHopResults = oneHopSearchStmt.executeQuery();
+
+      int dirFlights = 0;
+      while (oneHopResults.next()){
+        dirFlights++;
+      }
+      oneHopResults.first();
+
+      if (dirFlights == 0 && directFlight){
+        return "No flights match your selection\n";
       }
 
+      if (!directFlight){
+        twoHopSearchStmt.setString(1, originCity);
+        twoHopSearchStmt.setString(2, destinationCity);
+        twoHopSearchStmt.setInt(3, dayOfMonth);
+        twoHopSearchStmt.setInt(4, numberOfItineraries - dirFlights);
+        ResultSet twoHopResults = twoHopSearchStmt.executeQuery();
+      }
 
-      // one hop itineraries
-      String unsafeSearchSQL =
-        "     SELECT f.day_of_month, f.cid, f.op_carrier_flight_num, f.origin_city, f.dest_city,"
-        + "          f.duration_mins, a.num_seats, f.price "
-        + "     FROM Flights f, N_Numbers n, Aircraft_Types a"
-        + "    WHERE f.tail_num = n.n_number AND n.mfr_mdl_code = a.atid"
-        + "      AND origin_city = \'" + originCity + "\'"
-        + "      AND dest_city = \'" + destinationCity + "\'"
-        + "      AND day_of_month =  " + dayOfMonth
-        + " ORDER BY duration_mins ASC"
-        + "    LIMIT " + numberOfItineraries;
-
-      Statement searchStatement = conn.createStatement();
-      ResultSet oneHopResults = searchStatement.executeQuery(unsafeSearchSQL);
-
+      
       while (oneHopResults.next()) {
         int result_dayOfMonth = oneHopResults.getInt("day_of_month");
         String result_carrierId = oneHopResults.getString("cid");
@@ -235,9 +258,12 @@ public class Query extends QueryAbstract {
                   + result_destCity + " Duration: " + result_duration + " Capacity: " + result_capacity
                   + " Price: " + result_price + "\n");
       }
+
       oneHopResults.close();
+
     } catch (SQLException e) {
       e.printStackTrace();
+      return "Failed to search\n";
     }
 
     return sb.toString();
