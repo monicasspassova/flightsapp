@@ -147,29 +147,21 @@ public class Query extends QueryAbstract {
         return "Failed to create user\n";
       }
 
-
       // check that user not already in db (need to execute query search)
       checkUsersStmt.setString(1, username.toUpperCase());
       ResultSet check = checkUsersStmt.executeQuery();
 
-      System.out.println(check.getInt(1));
-
-      if (check.next() && check.getInt(1) == 1 ){
+      if (check.next() && check.getInt(1) > 0 ){
         return "Failed to create user\n";
       }      
 
       // salt and hash pass to store in db
       byte[] dbPass = PasswordUtils.saltAndHashPassword(password);
 
-      System.out.println(dbPass);
-
-
       // create user and insert into table
       insertUserStmt.setString(1, username.toUpperCase());
       insertUserStmt.setBytes(2, dbPass);
       insertUserStmt.setInt(3, initAmount);
-
-      System.out.println(insertUserStmt);
 
       insertUserStmt.executeUpdate();
 

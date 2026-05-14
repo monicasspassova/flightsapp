@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: flightapp.FlightServiceTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.415 s <<< FAILURE! - in flightapp.FlightServiceTest
-flightapp.FlightServiceTest.runTest[0]  Time elapsed: 0.078 s  <<< FAILURE!
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.431 s <<< FAILURE! - in flightapp.FlightServiceTest
+flightapp.FlightServiceTest.runTest[0]  Time elapsed: 0.08 s  <<< FAILURE!
 java.lang.AssertionError: 
 Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/create/create_basic.test.txt. Actual outcome were: 
 ---Terminal 0 begin
