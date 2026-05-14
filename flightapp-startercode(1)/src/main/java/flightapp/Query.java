@@ -26,10 +26,15 @@ public class Query extends QueryAbstract {
     + "      AND fid = ?";
   private PreparedStatement flightCapacityStmt;
   
-  private static final String CLEAR_TABLES_SQL = 
+  private static final String CLEAR_USERS_SQL = 
     "DELETE " + 
-    "FROM Users_mspass, Reservations_mspass";
-  private PreparedStatement clearTablesStmt;
+    "FROM Users_mspass";
+  private PreparedStatement clearUsersStmt;
+
+  private static final String CLEAR_RES_SQL = 
+    "DELETE " +
+    "FROM Reservations_mspass";
+  private PreparedStatement clearResStmt;
 
   private static final String GET_PASS_SQL =
     "SELECT password " +
@@ -83,7 +88,8 @@ public class Query extends QueryAbstract {
    */
   public void clearTables() {
     try {
-      clearTablesStmt.executeQuery();
+      clearUsersStmt.executeQuery();
+      clearResStmt.executeQuery();
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -101,7 +107,8 @@ public class Query extends QueryAbstract {
     flightCapacityStmt = conn.prepareStatement(FLIGHT_CAPACITY_SQL);
 
     // TODO: continue adding every time we execute query
-    clearTablesStmt = conn.prepareStatement(CLEAR_TABLES_SQL);
+    clearUsersStmt = conn.prepareStatement(CLEAR_USERS_SQL);
+    clearResStmt = conn.prepareStatement(CLEAR_RES_SQL);
     getPassStmt = conn.prepareStatement(GET_PASS_SQL);
     checkUsersStmt = conn.prepareStatement(CHECK_USERS_SQL);
     insertUserStmt = conn.prepareStatement(INSERT_USER_SQL);
@@ -169,7 +176,7 @@ public class Query extends QueryAbstract {
       return "Created user " + username +"\n";
 
     } catch (Exception e) {
-      e.printStackTrace();
+
       return "Failed to create user\n";
 
     }
