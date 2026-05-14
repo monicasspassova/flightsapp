@@ -36,6 +36,17 @@ public class Query extends QueryAbstract {
     "FROM Users_mspass " +
     "WHERE username = ?";
   private PreparedStatement getPassStmt;
+
+  private static final String CHECK_USERS_SQL =
+    "SELECT count(*) " +
+    "FROM Users_mspass " +
+    "WHERE username = ?";
+  private PreparedStatement checkUsersStmt;
+
+  private static final String INSERT_USER_SQL = 
+    "INSERT INTO Users_mspass " +
+    "VALUES (?, ?, ?)";
+  private PreparedStatement insertUserStmt;
     
   //
   // Instance variables
@@ -54,7 +65,6 @@ public class Query extends QueryAbstract {
    */
   public void clearTables() {
     try {
-      // TODO: YOUR CODE HERE
       clearTablesStmt.executeQuery();
 
     } catch (Exception e) {
@@ -72,17 +82,16 @@ public class Query extends QueryAbstract {
     // functions, etc.
     flightCapacityStmt = conn.prepareStatement(FLIGHT_CAPACITY_SQL);
 
-    // TODO: YOUR CODE HERE
+    // TODO: continue adding every time we execute query
     clearTablesStmt = conn.prepareStatement(CLEAR_TABLES_SQL);
     getPassStmt = conn.prepareStatement(GET_PASS_SQL);
+    checkUsersStmt = conn.prepareStatement(CHECK_USERS_SQL);
     
   }
   
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_login(String username, String password) {
-    // TODO: YOUR CODE HERE
-
     try{
       if (username.equals(loggedUser)){
         return "User already logged in\n";
@@ -110,7 +119,34 @@ public class Query extends QueryAbstract {
   /* See QueryAbstract.java for javadoc */
   public String transaction_createCustomer(String username, String password, int initAmount) {
     // TODO: YOUR CODE HERE
-    return "Failed to create user\n";
+
+    // check that initAmount >= 0 first
+    try{
+      if (initAmount < 0){
+        return "Failed to create user\n";
+      }
+
+      // check that user not already in db (need to execute query search)
+      checkUsersStmt.setString(1, username);
+      ResultSet check = checkUsersStmt.executeQuery();
+      
+      if (check.getBoolean(0)){
+        return "Failed to create user\n";
+      }
+
+
+      // salt and hash pass to store in db
+
+      // create user and insert into table
+
+
+
+    } catch (Exception e) {
+      return "Failed to create user\n";
+    }
+    
+
+
   }
 
   /* See QueryAbstract.java for javadoc */
