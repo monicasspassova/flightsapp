@@ -31,11 +31,16 @@ public class Query extends QueryAbstract {
     "FROM Users_mspass, Reservations_mspass";
   private PreparedStatement clearTablesStmt;
 
-
+  private static final String GET_PASS_SQL =
+    "SELECT password " +
+    "FROM Users_mspass " +
+    "WHERE username = ?";
+  private PreparedStatement getPassStmt;
     
   //
   // Instance variables
   //
+  String loggedUser = "";
 
 
   protected Query() throws SQLException, IOException {
@@ -68,15 +73,38 @@ public class Query extends QueryAbstract {
     flightCapacityStmt = conn.prepareStatement(FLIGHT_CAPACITY_SQL);
 
     // TODO: YOUR CODE HERE
-
     clearTablesStmt = conn.prepareStatement(CLEAR_TABLES_SQL);
+    getPassStmt = conn.prepareStatement(GET_PASS_SQL);
     
   }
+  
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_login(String username, String password) {
     // TODO: YOUR CODE HERE
-    return "Login failed\n";
+
+    try{
+      if (username.equals(loggedUser)){
+        return "User already logged in\n";
+      }
+      
+
+      getPassStmt.setString(1, username);
+      ResultSet pass = getPassStmt.executeQuery();
+      byte[] saltedHashPass = pass.getBytes(0);
+
+      if (PasswordUtils.plaintextMatchesSaltedHash(password, saltedHashPass)){
+        loggedUser = username;
+        return "Logged in as " + username + "\n";
+      }
+      else{
+        return "Login failed\n";
+      }
+
+    } catch (Exception e) {
+      return "Login failed\n";
+    }
+
   }
 
   /* See QueryAbstract.java for javadoc */
