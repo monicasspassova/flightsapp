@@ -46,9 +46,11 @@ public class PasswordUtils {
     byte[] salt = new byte[SALT_LENGTH_BYTES];
     System.arraycopy(saltedHashed, 0, salt, 0, 16);
 
-    byte[] hashedPlaintext = hashWithSalt(plaintext, salt);
+    byte[] hash = new byte[saltedHashed.length - salt.length];
+    System.arraycopy(saltedHashed, SALT_LENGTH_BYTES, hash, 0, hash.length);
 
-    return Arrays.equals(hashedPlaintext, saltedHashed);
+    byte[] hashedPlaintext = hashWithSalt(plaintext, salt);
+    return Arrays.equals(hashedPlaintext, hash);
   }
   
   // Password hashing parameter constants.
