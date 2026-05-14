@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: flightapp.FlightServiceTest
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.963 s - in flightapp.FlightServiceTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.008 s - in flightapp.FlightServiceTest
