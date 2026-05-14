@@ -114,18 +114,18 @@ public class Query extends QueryAbstract {
   /* See QueryAbstract.java for javadoc */
   public String transaction_login(String username, String password) {
     try{
-      if (username.equals(loggedUser)){
+      if (loggedUser != null){
         return "User already logged in\n";
       }
       
 
-      getPassStmt.setString(1, username);
+      getPassStmt.setString(1, username.toUpperCase());
       ResultSet pass = getPassStmt.executeQuery();
       pass.next();
       byte[] saltedHashPass = pass.getBytes(1);
 
       if (PasswordUtils.plaintextMatchesSaltedHash(password, saltedHashPass)){
-        loggedUser = username;
+        loggedUser = username.toUpperCase();
         return "Logged in as " + username + "\n";
       }
       else{
