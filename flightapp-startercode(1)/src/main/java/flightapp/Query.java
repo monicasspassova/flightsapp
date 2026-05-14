@@ -169,7 +169,7 @@ public class Query extends QueryAbstract {
       return "Created user " + username +"\n";
 
     } catch (Exception e) {
-
+      e.printStackTrace();
       return "Failed to create user\n";
 
     }
