@@ -69,7 +69,7 @@ public class Query extends QueryAbstract {
   //
   // Instance variables
   //
-  String loggedUser = "";
+  String loggedUser = null;
 
 
   protected Query() throws SQLException, IOException {

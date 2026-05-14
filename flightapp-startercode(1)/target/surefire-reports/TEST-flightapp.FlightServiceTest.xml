@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="flightapp.FlightServiceTest" time="6.996" tests="3" errors="0" skipped="0" failures="2">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="flightapp.FlightServiceTest" time="9.004" tests="3" errors="0" skipped="0" failures="3">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -14,7 +14,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-21-openjdk/lib"/>
-    <property name="sun.java.command" value="org.apache.maven.surefire.booter.ForkedBooter /homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/surefire 2026-05-14T14-19-50_506-jvmRun1 surefire7592563162601780989tmp surefire_013283889765073035006tmp"/>
+    <property name="sun.java.command" value="org.apache.maven.surefire.booter.ForkedBooter /homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/surefire 2026-05-14T14-32-32_230-jvmRun1 surefire7192749013593702268tmp surefire_05421524786061948642tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="test" value="flightapp.FlightServiceTest"/>
     <property name="surefire.test.class.path" value="/homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/test-classes:/homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/classes:/homes/iws/mspass/.m2/repository/junit/junit/4.13/junit-4.13.jar:/homes/iws/mspass/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/homes/iws/mspass/.m2/repository/org/postgresql/postgresql/42.7.5/postgresql-42.7.5.jar:/homes/iws/mspass/.m2/repository/org/checkerframework/checker-qual/3.48.3/checker-qual-3.48.3.jar:/homes/iws/mspass/.m2/repository/org/mybatis/mybatis/3.5.7/mybatis-3.5.7.jar:/homes/iws/mspass/.m2/repository/commons-io/commons-io/2.8.0/commons-io-2.8.0.jar:/homes/iws/mspass/flightsapp/flightapp-startercode(1)/distributed.jar:"/>
@@ -56,7 +56,28 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="runTest[0]" classname="flightapp.FlightServiceTest" time="0.78">
+  <testcase name="runTest[0]" classname="flightapp.FlightServiceTest" time="2.453">
+    <failure message="Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_wrongPassword.test.txt. Actual outcome were: &#10;---Terminal 0 begin&#10;Created user user1&#10;User already logged in&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;Possible outcomes were: &#10;===== Outcome 0 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Login failed&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_wrongPassword.test.txt. Actual outcome were: 
+---Terminal 0 begin
+Created user user1
+User already logged in
+Goodbye
+---Terminal 0 end
+
+
+Possible outcomes were: 
+===== Outcome 0 =====
+---Terminal 0 begin
+Created user user1
+Login failed
+Goodbye
+---Terminal 0 end
+
+
+
+	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
+]]></failure>
     <system-out><![CDATA[Running test setup...
 ... using dbconn.properties for test credentials
 ... attempting to connect as mspass@flights to server localhost
@@ -116,12 +137,12 @@ Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/n
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:548)
 ]]></system-err>
   </testcase>
-  <testcase name="runTest[1]" classname="flightapp.FlightServiceTest" time="0.065">
-    <failure message="Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_single.test.txt. Actual outcome were: &#10;---Terminal 0 begin&#10;Failed to create user&#10;Login failed&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;Possible outcomes were: &#10;===== Outcome 0 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+  <testcase name="runTest[1]" classname="flightapp.FlightServiceTest" time="0.058">
+    <failure message="Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_single.test.txt. Actual outcome were: &#10;---Terminal 0 begin&#10;Failed to create user&#10;User already logged in&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;Possible outcomes were: &#10;===== Outcome 0 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
 Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_single.test.txt. Actual outcome were: 
 ---Terminal 0 begin
 Failed to create user
-Login failed
+User already logged in
 Goodbye
 ---Terminal 0 end
 
@@ -190,14 +211,14 @@ Goodbye
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:548)
 ]]></system-err>
   </testcase>
-  <testcase name="runTest[2]" classname="flightapp.FlightServiceTest" time="2.221">
-    <failure message="Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_reloginAsSecondUser.test.txt. Actual outcome were: &#10;---Terminal 0 begin&#10;Failed to create user&#10;Login failed&#10;Created user user2&#10;Login failed&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;Possible outcomes were: &#10;===== Outcome 0 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Created user user2&#10;User already logged in&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+  <testcase name="runTest[2]" classname="flightapp.FlightServiceTest" time="2.294">
+    <failure message="Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_reloginAsSecondUser.test.txt. Actual outcome were: &#10;---Terminal 0 begin&#10;Failed to create user&#10;User already logged in&#10;Created user user2&#10;User already logged in&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;Possible outcomes were: &#10;===== Outcome 0 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Created user user2&#10;User already logged in&#10;Goodbye&#10;---Terminal 0 end&#10;&#10;&#10;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
 Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_reloginAsSecondUser.test.txt. Actual outcome were: 
 ---Terminal 0 begin
 Failed to create user
-Login failed
+User already logged in
 Created user user2
-Login failed
+User already logged in
 Goodbye
 ---Terminal 0 end
 
