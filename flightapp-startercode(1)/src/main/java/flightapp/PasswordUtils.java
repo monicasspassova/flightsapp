@@ -7,7 +7,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.Random;
+import java.util.Random;
+import java.util.Arrays;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -29,7 +30,7 @@ public class PasswordUtils {
     byte[] saltedHashedPassword = new byte[salt.length + saltedHash.length];
     
     System.arraycopy(salt, 0, saltedHashedPassword, 0, salt.length);
-    System.arraycopy(saltedHash, 0, saltedHashedPassword, salt.length, saltedHashedPassword.length);
+    System.arraycopy(saltedHash, 0, saltedHashedPassword, salt.length, saltedHash.length);
 
 
     return saltedHashedPassword;
@@ -43,12 +44,11 @@ public class PasswordUtils {
     // saltAndHashPassword), then use it to check whether the user-provided plaintext
     // password matches the password hash.
     byte[] salt = new byte[SALT_LENGTH_BYTES];
-    salt = System.arraycopy(saltedHashed, 0, salt, 0, 16);
+    System.arraycopy(saltedHashed, 0, salt, 0, 16);
 
     byte[] hashedPlaintext = hashWithSalt(plaintext, salt);
 
-
-    return hashedPlaintext.equals(saltedHashed);
+    return Arrays.equals(hashedPlaintext, saltedHashed);
   }
   
   // Password hashing parameter constants.
