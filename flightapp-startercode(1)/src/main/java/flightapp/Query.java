@@ -58,7 +58,14 @@ public class Query extends QueryAbstract {
       "AND F.day_of_month = ? " +
     "ORDER BY F.duration_mins ASC " +
     "LIMIT ?";
-    
+  private PreparedStatement oneHopSearchStmt;
+
+  private static final String TWO_HOP_SEARCH_SQL = 
+    "SELECT F.day_of_month, F.cid, F.op_carrier_flight_num, F.origin_city, F.dest_city, " +
+    "F.durations_mins, A.num_seats, F.price, F." +
+    "FROM Flights as F, Flights as F2, N_Numbers as N, Airfract_Types as A " +
+    "WHERE F.tail_num = N.n_number";
+  private PreparedStatement twoHopSearchStmt;
   //
   // Instance variables
   //
@@ -140,13 +147,14 @@ public class Query extends QueryAbstract {
         return "Failed to create user\n";
       }
 
+
       // check that user not already in db (need to execute query search)
-      checkUsersStmt.setString(1, username);
+      checkUsersStmt.setString(1, username.toUpperCase());
       ResultSet check = checkUsersStmt.executeQuery();
 
-      System.out.println(check.getInt(0));
+      System.out.println(check.getInt(1));
 
-      if (check.getBoolean(0)){
+      if (check.next() && check.getInt(1) == 1 ){
         return "Failed to create user\n";
       }      
 
@@ -157,13 +165,13 @@ public class Query extends QueryAbstract {
 
 
       // create user and insert into table
-      insertUserStmt.setString(1, username);
+      insertUserStmt.setString(1, username.toUpperCase());
       insertUserStmt.setBytes(2, dbPass);
       insertUserStmt.setInt(3, initAmount);
 
       System.out.println(insertUserStmt);
 
-      insertUserStmt.executeQuery();
+      insertUserStmt.executeUpdate();
 
       return "Created user " + username +"\n";
 
@@ -190,6 +198,13 @@ public class Query extends QueryAbstract {
     StringBuffer sb = new StringBuffer();
 
     try {
+
+      // determine if we need to do only direct or not
+      if (directFlight){
+        
+      }
+
+
       // one hop itineraries
       String unsafeSearchSQL =
         "     SELECT f.day_of_month, f.cid, f.op_carrier_flight_num, f.origin_city, f.dest_city,"
