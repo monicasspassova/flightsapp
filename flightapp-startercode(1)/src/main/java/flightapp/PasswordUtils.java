@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.Random;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -41,7 +42,7 @@ public class PasswordUtils {
     // TODO: extract the salt from the byte array (ie, undo the logic you implemented in 
     // saltAndHashPassword), then use it to check whether the user-provided plaintext
     // password matches the password hash.
-    byte[] salt = new byte[saltedHashed.length - SALT_LENGTH_BYTES];
+    byte[] salt = new byte[SALT_LENGTH_BYTES];
     salt = System.arraycopy(saltedHashed, 0, salt, 0, 16);
 
     byte[] hashedPlaintext = hashWithSalt(plaintext, salt);
@@ -60,7 +61,7 @@ public class PasswordUtils {
    */
   static byte[] generateSalt() {
     // TODO: implement this.
-    Random rnd = new Rnd();
+    Random rnd = new Random();
     byte[] salt = new byte[SALT_LENGTH_BYTES];
     rnd.nextBytes(salt);
     return salt;
