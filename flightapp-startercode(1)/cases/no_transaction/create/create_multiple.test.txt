@@ -1,0 +1,19 @@
+# Create multiple users, some are valid and some are not
+
+# commands to execute:
+create user1 user1 100
+create user2 user2 200
+create user1 user3 100
+create user3 user3 -100
+create user4 user4 400
+quit
+*
+
+# expected output from those commands:
+Created user user1
+Created user user2
+Failed to create user
+Failed to create user
+Created user user4
+Goodbye
+*

@@ -1,0 +1,11 @@
+# Empty flight search
+
+# commands:
+search "Seattle, WA" "Narnia" 1 14 10
+quit
+*
+
+# expected command output:
+No flights match your selection
+Goodbye
+*

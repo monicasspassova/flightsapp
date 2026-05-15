@@ -1,0 +1,15 @@
+# Try to login as a user that doesn't exist, create user and try again
+
+# commands to execute:
+login user1 user1
+create user1 user1 100
+login user1 user1
+quit
+*
+
+# expected output:
+Login failed
+Created user user1
+Logged in as user1
+Goodbye
+*
