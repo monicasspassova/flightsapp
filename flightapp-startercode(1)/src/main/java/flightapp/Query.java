@@ -57,7 +57,7 @@ public class Query extends QueryAbstract {
 
   private static final String ONE_HOP_SEARCH_SQL = 
     "SELECT F.day_of_month, F.cid, F.op_carrier_flight_num, F.origin_city, F.dest_city, " +
-    "F.durations_mins, A.num_seats, F.price " +
+    "F.duration_mins, A.num_seats, F.price " +
     "FROM Flights as F, N_Numbers as N, Aircraft_Types as A " +
     "WHERE F.tail_num = N.n_number AND N.mfr_mdl_code = A.atid " +
       "AND F.origin_city = ? " +
