@@ -70,15 +70,15 @@ public class Query extends QueryAbstract {
   private static final String TWO_HOP_SEARCH_SQL = 
     "SELECT F.fid, F2.fid as fid2, F.day_of_month, F.cid, F.op_carrier_flight_num, F.origin_city, F.dest_city, " +
     "F.duration_mins, A.num_seats as capacity, F.price, F2.cid as cid2, F2.op_carrier_flight_num as op_carrier_flight_num2, " + 
-    "F2.origin_city as origin_city2, F2.dest_city as dest_city2, F2.duration_mins as duration_mins2, A2.num_seats as capacity2, F2.price as price2" +
-    "FROM Flights as F, Flights as F2, N_Numbers as N, N_Numbers as N2, Airfract_Types as A, Aircraft_Types as A2 " +
+    "F2.origin_city as origin_city2, F2.dest_city as dest_city2, F2.duration_mins as duration_mins2, A2.num_seats as capacity2, F2.price as price2 " +
+    "FROM Flights as F, Flights as F2, N_Numbers as N, N_Numbers as N2, Aircraft_Types as A, Aircraft_Types as A2 " +
     "WHERE F.tail_num = N.n_number AND N.mfr_mdl_code = A.atid " +
       "AND F2.tail_num = N2.n_number AND N2.mfr_mdl_code = A2.atid " +
       "AND F.cancelled = 0 AND F2.cancelled = 0 " +
       "AND F.origin_city = ? " +
       "AND F2.dest_city = ? " +
       "AND F.dest_city = F2.origin_city " +
-      "AND F.day_of_month = ?" +
+      "AND F.day_of_month = ? " +
       "AND F.day_of_month = F2.day_of_month " +
     "ORDER BY F.duration_mins ASC, F2.duration_mins ASC, F.fid ASC, F2.fid ASC " +
     "LIMIT ?";
@@ -206,7 +206,6 @@ public class Query extends QueryAbstract {
     // handles searches for direct flights.  We are providing it *only* as an example of how
     // to use JDBC; you are required to replace it with your own secure implementation.
     //
-    // TODO: YOUR CODE HERE
 
     StringBuffer sb = new StringBuffer();
     ArrayList<Object[]> itineraries = new ArrayList<>();
