@@ -235,7 +235,7 @@ public class Query extends QueryAbstract {
 
           oneHopResults.getInt("fid"),
           oneHopResults.getInt("day_of_month"),
-          oneHopResults.getInt("cid"),
+          oneHopResults.getString("cid"),
           oneHopResults.getInt("op_carrier_flight_num"),
           oneHopResults.getString("origin_city"),
           oneHopResults.getString("dest_city"),
@@ -262,7 +262,7 @@ public class Query extends QueryAbstract {
 
             twoHopResults.getInt("fid"),
             twoHopResults.getInt("day_of_month"),
-            twoHopResults.getInt("cid"),
+            twoHopResults.getString("cid"),
             twoHopResults.getInt("op_carrier_flight_num"),
             twoHopResults.getString("origin_city"),
             twoHopResults.getString("dest_city"),
@@ -272,7 +272,7 @@ public class Query extends QueryAbstract {
 
             twoHopResults.getInt("fid2"),
             twoHopResults.getInt("day_of_month"),
-            twoHopResults.getInt("cid2"),
+            twoHopResults.getString("cid2"),
             twoHopResults.getInt("op_carrier_flight_num2"),
             twoHopResults.getString("origin_city2"),
             twoHopResults.getString("dest_city2"),
@@ -301,7 +301,7 @@ public class Query extends QueryAbstract {
         int result_totalDuration = (int) it[1];
         int result_fid = (int) it[2];
         int result_dayOfMonth = (int) it[3];
-        int result_carrierId = (int) it[4];
+        String result_carrierId = (String) it[4];
         int result_carrierNum = (int) it[5];
         String result_originCity = (String) it[6];
         String result_destCity = (String) it[7];
@@ -317,13 +317,15 @@ public class Query extends QueryAbstract {
                   + result_destCity + " Duration: " + result_duration + " Capacity: " + result_capacity
                   + " Price: " + result_price + "\n");
 
+        index++;
+
         if (result_numFlights == 1){
           continue;
         }
 
         int result_fid2 = (int) it[11];
         int result_dayOfMonth2 = (int) it[12];
-        int result_carrierId2 = (int) it[13];
+        String result_carrierId2 = (String) it[13];
         int result_carrierNum2 = (int) it[14];
         String result_originCity2 = (String) it[15];
         String result_destCity2 = (String) it[16];
@@ -335,7 +337,7 @@ public class Query extends QueryAbstract {
                   + result_carrierNum2 + " Origin: " + result_originCity2 + " Destination: "
                   + result_destCity2 + " Duration: " + result_duration2 + " Capacity: " + result_capacity2
                   + " Price: " + result_price2 + "\n");
-        index++;
+
       }
 
     
