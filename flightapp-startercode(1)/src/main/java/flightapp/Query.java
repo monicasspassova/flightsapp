@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  * Runs queries against a back-end database
@@ -66,9 +68,9 @@ public class Query extends QueryAbstract {
   private PreparedStatement oneHopSearchStmt;
 
   private static final String TWO_HOP_SEARCH_SQL = 
-    "SELECT F.day_of_month, F.cid, F.op_carrier_flight_num, F.origin_city, F.dest_city, " +
-    "F.duration_mins, A.num_seats, F.price, F2.cid, F2.op_carrier_flight_num, F2.origin_city, F2.dest_city, " +
-    "F2.duration_mins, A2.num_seats, F2.price" +
+    "SELECT F.fid, F2.fid as fid2, F.day_of_month, F.cid, F.op_carrier_flight_num, F.origin_city, F.dest_city, " +
+    "F.duration_mins, A.num_seats as capacity, F.price, F2.cid as cid2, F2.op_carrier_flight_num as op_carrier_flight_num2, " + 
+    "F2.origin_city as origin_city2, F2.dest_city as dest_city2, F2.duration_mins as duration_mins2, A2.num_seats as capacity2, F2.price as price2" +
     "FROM Flights as F, Flights as F2, N_Numbers as N, N_Numbers as N2, Airfract_Types as A, Aircraft_Types as A2 " +
     "WHERE F.tail_num = N.n_number AND N.mfr_mdl_code = A.atid " +
       "AND F2.tail_num = N2.n_number AND N2.mfr_mdl_code = A2.atid " +
@@ -207,6 +209,7 @@ public class Query extends QueryAbstract {
     // TODO: YOUR CODE HERE
 
     StringBuffer sb = new StringBuffer();
+    ArrayList<Object[]> itineraries = new ArrayList<>();
 
     try {
 
@@ -224,43 +227,118 @@ public class Query extends QueryAbstract {
       oneHopSearchStmt.setInt(4, numberOfItineraries);
       ResultSet oneHopResults = oneHopSearchStmt.executeQuery();
 
-      int dirFlights = 0;
-      while (oneHopResults.next()){
-        dirFlights++;
-      }
-      oneHopResults.first();
+      while(oneHopResults.next()){
+        Object[] it = {
+          1,
+          oneHopResults.getInt("duration_mins"), // total duration
 
-      if (dirFlights == 0 && directFlight){
-        return "No flights match your selection\n";
+
+          oneHopResults.getInt("fid"),
+          oneHopResults.getInt("day_of_month"),
+          oneHopResults.getInt("cid"),
+          oneHopResults.getInt("op_carrier_flight_num"),
+          oneHopResults.getString("origin_city"),
+          oneHopResults.getString("dest_city"),
+          oneHopResults.getInt("duration_mins"),
+          oneHopResults.getInt("capacity"),
+          oneHopResults.getInt("price")
+        };
+
+        itineraries.add(it);
       }
+      oneHopResults.close();
 
       if (!directFlight){
         twoHopSearchStmt.setString(1, originCity);
         twoHopSearchStmt.setString(2, destinationCity);
         twoHopSearchStmt.setInt(3, dayOfMonth);
-        twoHopSearchStmt.setInt(4, numberOfItineraries - dirFlights);
+        twoHopSearchStmt.setInt(4, numberOfItineraries - itineraries.size());
         ResultSet twoHopResults = twoHopSearchStmt.executeQuery();
+
+        while(twoHopResults.next()){
+          Object[] it = {
+            2,
+            twoHopResults.getInt("duration_mins") + twoHopResults.getInt("duration_mins2"),
+
+            twoHopResults.getInt("fid"),
+            twoHopResults.getInt("day_of_month"),
+            twoHopResults.getInt("cid"),
+            twoHopResults.getInt("op_carrier_flight_num"),
+            twoHopResults.getString("origin_city"),
+            twoHopResults.getString("dest_city"),
+            twoHopResults.getInt("duration_mins"),
+            twoHopResults.getInt("capacity"),
+            twoHopResults.getInt("price"),
+
+            twoHopResults.getInt("fid2"),
+            twoHopResults.getInt("day_of_month"),
+            twoHopResults.getInt("cid2"),
+            twoHopResults.getInt("op_carrier_flight_num2"),
+            twoHopResults.getString("origin_city2"),
+            twoHopResults.getString("dest_city2"),
+            twoHopResults.getInt("duration_mins2"),
+            twoHopResults.getInt("capacity2"),
+            twoHopResults.getInt("price2"),
+
+          };
+
+          itineraries.add(it);
+        }
+
+        twoHopResults.close();
       }
 
-      
-      while (oneHopResults.next()) {
-        int result_dayOfMonth = oneHopResults.getInt("day_of_month");
-        String result_carrierId = oneHopResults.getString("cid");
-        String result_flightNum = oneHopResults.getString("op_carrier_flight_num");
-        String result_originCity = oneHopResults.getString("origin_city");
-        String result_destCity = oneHopResults.getString("dest_city");
-        int result_duration = oneHopResults.getInt("duration_mins");
-        int result_capacity = oneHopResults.getInt("num_seats");
-        int result_price = oneHopResults.getInt("price");
+    
+      if (itineraries.isEmpty()){
+        return "No flights match your selection\n";
+      }
 
-        sb.append("Day: " + result_dayOfMonth + " Carrier: " + result_carrierId + " Number: "
-                  + result_flightNum + " Origin: " + result_originCity + " Destination: "
+      itineraries.sort(Comparator.comparingInt(a -> (int) a[1]));
+      
+      int index = 0;
+      for(Object[] it : itineraries) {
+        int result_numFlights = (int) it[0];
+        int result_totalDuration = (int) it[1];
+        int result_fid = (int) it[2];
+        int result_dayOfMonth = (int) it[3];
+        int result_carrierId = (int) it[4];
+        int result_carrierNum = (int) it[5];
+        String result_originCity = (String) it[6];
+        String result_destCity = (String) it[7];
+        int result_duration = (int) it[8];
+        int result_capacity = (int) it[9];
+        int result_price = (int) it[10];
+
+        sb.append("Itinerary " + index + ": " + result_numFlights + " flights(s), " + 
+                  result_totalDuration + " minutes\n");
+        
+        sb.append("ID: " + result_fid + " Day: " + result_dayOfMonth + " Carrier: " + result_carrierId + " Number: "
+                  + result_carrierNum + " Origin: " + result_originCity + " Destination: "
                   + result_destCity + " Duration: " + result_duration + " Capacity: " + result_capacity
                   + " Price: " + result_price + "\n");
+
+        if (result_numFlights == 1){
+          continue;
+        }
+
+        int result_fid2 = (int) it[11];
+        int result_dayOfMonth2 = (int) it[12];
+        int result_carrierId2 = (int) it[13];
+        int result_carrierNum2 = (int) it[14];
+        String result_originCity2 = (String) it[15];
+        String result_destCity2 = (String) it[16];
+        int result_duration2 = (int) it[17];
+        int result_capacity2 = (int) it[18];
+        int result_price2 = (int) it[19];
+        
+        sb.append("ID: " + result_fid2 + " Day: " + result_dayOfMonth2 + " Carrier: " + result_carrierId2 + " Number: "
+                  + result_carrierNum2 + " Origin: " + result_originCity2 + " Destination: "
+                  + result_destCity2 + " Duration: " + result_duration2 + " Capacity: " + result_capacity2
+                  + " Price: " + result_price2 + "\n");
+
       }
 
-      oneHopResults.close();
-
+    
     } catch (SQLException e) {
       e.printStackTrace();
       return "Failed to search\n";
