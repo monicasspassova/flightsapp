@@ -335,7 +335,7 @@ public class Query extends QueryAbstract {
                   + result_carrierNum2 + " Origin: " + result_originCity2 + " Destination: "
                   + result_destCity2 + " Duration: " + result_duration2 + " Capacity: " + result_capacity2
                   + " Price: " + result_price2 + "\n");
-
+        index++;
       }
 
     
