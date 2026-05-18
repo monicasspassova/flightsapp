@@ -66,8 +66,6 @@ public class Query extends QueryAbstract {
       "AND F.day_of_month = ? " +
     "ORDER BY F.duration_mins ASC " +
     "LIMIT ?";
-
-    
   private PreparedStatement oneHopSearchStmt;
 
   private static final String TWO_HOP_SEARCH_SQL = 
@@ -86,11 +84,28 @@ public class Query extends QueryAbstract {
     "ORDER BY F.duration_mins + F2.duration_mins ASC, F.fid ASC, F2.fid ASC " +
     "LIMIT ?";
   private PreparedStatement twoHopSearchStmt;
+
+  private static final String CHECK_BOOK_DAY_SQL = 
+    "SELECT count(*) " +
+    "FROM Reservations_mspass " +
+    "WHERE fid1.day_of_month = ? AND userid = ?";
+  private PreparedStatement checkBookDayStmt;
+
+  private static final String BOOK_RESERVATION_SQL =
+    "INSERT INTO Reservations_mspass " + 
+    "VALUES (?, ?, 0, ?, ?)";
+  private PreparedStatement bookReservationStmt;
+
+
+
+  private static int rid = 1;
+
   //
   // Instance variables
   //
   String loggedUser = null;
-
+  ArrayList<Object[]> searchResults = new ArrayList<Object[]>();
+  
 
   protected Query() throws SQLException, IOException {
     prepareStatements();
@@ -129,6 +144,7 @@ public class Query extends QueryAbstract {
     insertUserStmt = conn.prepareStatement(INSERT_USER_SQL);
     oneHopSearchStmt = conn.prepareStatement(ONE_HOP_SEARCH_SQL);
     twoHopSearchStmt = conn.prepareStatement(TWO_HOP_SEARCH_SQL);
+    checkBookDayStmt = conn.prepareStatement(CHECK_BOOK_DAY_SQL);
 
   }
   
@@ -205,10 +221,6 @@ public class Query extends QueryAbstract {
   public String transaction_search(String originCity, String destinationCity, 
                                    boolean directFlight, int dayOfMonth,
                                    int numberOfItineraries) {
-    // WARNING: the below code is insecure (it's susceptible to SQL injection attacks) AND only
-    // handles searches for direct flights.  We are providing it *only* as an example of how
-    // to use JDBC; you are required to replace it with your own secure implementation.
-    //
 
     StringBuffer sb = new StringBuffer();
     ArrayList<Object[]> itineraries = new ArrayList<>();
@@ -347,13 +359,49 @@ public class Query extends QueryAbstract {
       return "Failed to search\n";
     }
 
+    searchResults = itineraries;
     return sb.toString();
   }
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_book(int itineraryId) {
     // TODO: YOUR CODE HERE
-    return "Booking failed\n";
+    try{
+
+      // check if logged in yet or not
+      if (loggedUser == null){
+        return "Cannot book reservations, not logged in\n";
+      }
+
+      // check itId validity
+      if (searchResults.isEmpty() || searchResults.get(itineraryId-1) == null){
+        return "No such itinerary " + itineraryId + "\n";
+      }
+
+      Object[] itinerary = searchResults.get(itineraryId-1);
+      // check if day already booked
+      checkBookDayStmt.setInt(1, (int) itinerary[3]);
+      checkBookDayStmt.setString(2, loggedUser);
+      ResultSet result = checkBookDayStmt.executeQuery();
+      result.next();
+
+      if(result.getInt(0) > 0){
+        return "You cannot book two flights in the same day\n";
+      }
+
+      // can now book reservation (insert into table)
+      bookReservationStmt.setInt(1, rid++);
+      bookReservationStmt.setString(2, loggedUser);
+      bookReservationStmt.setInt(3, (int)itinerary[2]);
+      bookReservationStmt.setInt(4, (int)itinerary[11]);
+      bookReservationStmt.executeQuery();
+    
+      return "Booked flight(s), reservationId: {}\n";
+
+    } catch (Exception e){
+      return "Booking failed\n";
+    }
+    
   }
 
   /* See QueryAbstract.java for javadoc */

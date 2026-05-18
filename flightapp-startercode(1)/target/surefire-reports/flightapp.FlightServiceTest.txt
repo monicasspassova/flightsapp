@@ -1,4 +1,32 @@
 -------------------------------------------------------------------------------
 Test set: flightapp.FlightServiceTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.749 s - in flightapp.FlightServiceTest
+Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 2.001 s <<< FAILURE! - in flightapp.FlightServiceTest
+flightapp.FlightServiceTest.runTest[0]  Time elapsed: 1.107 s  <<< FAILURE!
+java.lang.AssertionError: 
+Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/book/book_basic.test.txt. Actual outcome were: 
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 299 minutes
+    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:299 Capacity:48 Price:555
+Booking failed
+Goodbye
+---Terminal 0 end
+
+
+Possible outcomes were: 
+===== Outcome 0 =====
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 299 minutes
+    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:299 Capacity:48 Price:555
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 0 end
+
+
+
+	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
+
