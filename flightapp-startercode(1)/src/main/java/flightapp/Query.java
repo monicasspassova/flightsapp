@@ -83,7 +83,7 @@ public class Query extends QueryAbstract {
       "AND F.dest_city = F2.origin_city " +
       "AND F.day_of_month = ? " +
       "AND F.day_of_month = F2.day_of_month " +
-    "ORDER BY F.duration_mins ASC, F2.duration_mins ASC, F.fid ASC, F2.fid ASC " +
+    "ORDER BY F.duration_mins + F2.duration_mins ASC, F.fid ASC, F2.fid ASC " +
     "LIMIT ?";
   private PreparedStatement twoHopSearchStmt;
   //
@@ -313,8 +313,8 @@ public class Query extends QueryAbstract {
         sb.append("Itinerary " + index + ": " + result_numFlights + " flight(s), " + 
                   result_totalDuration + " minutes\n");
         
-        sb.append("   ID:" + result_fid + " Day:" + result_dayOfMonth + " Carrier:" + result_carrierId + " Number:"
-                  + result_carrierNum + " Origin:'" + result_originCity + "' Destination:'"
+        sb.append("    ID:" + result_fid + " Day:" + result_dayOfMonth + " Carrier:" + result_carrierId + " CarrierNum:"
+                  + result_carrierNum + " Origin:'" + result_originCity + "' Dest:'"
                   + result_destCity + "' Duration:" + result_duration + " Capacity:" + result_capacity
                   + " Price:" + result_price + "\n");
 
@@ -334,8 +334,8 @@ public class Query extends QueryAbstract {
         int result_capacity2 = (int) it[18];
         int result_price2 = (int) it[19];
         
-        sb.append("   ID:" + result_fid2 + " Day:" + result_dayOfMonth2 + " Carrier:" + result_carrierId2 + " Number:"
-                  + result_carrierNum2 + " Origin:'" + result_originCity2 + "' Destination:'"
+        sb.append("    ID:" + result_fid2 + " Day:" + result_dayOfMonth2 + " Carrier:" + result_carrierId2 + " CarrierNum:"
+                  + result_carrierNum2 + " Origin:'" + result_originCity2 + "' Dest:'"
                   + result_destCity2 + "' Duration:" + result_duration2 + " Capacity:" + result_capacity2
                   + " Price:" + result_price2 + "\n");
 
