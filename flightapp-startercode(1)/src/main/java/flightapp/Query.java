@@ -56,15 +56,18 @@ public class Query extends QueryAbstract {
   private PreparedStatement insertUserStmt;
 
   private static final String ONE_HOP_SEARCH_SQL = 
-    "SELECT F.day_of_month, F.cid, F.op_carrier_flight_num, F.origin_city, F.dest_city, " +
+    "SELECT F.fid, F.day_of_month, F.cid, F.op_carrier_flight_num, F.origin_city, F.dest_city, " +
     "F.duration_mins, A.num_seats, F.price " +
     "FROM Flights as F, N_Numbers as N, Aircraft_Types as A " +
     "WHERE F.tail_num = N.n_number AND N.mfr_mdl_code = A.atid " +
+      "AND F.cancelled = 0" + 
       "AND F.origin_city = ? " +
       "AND F.dest_city = ? " +
       "AND F.day_of_month = ? " +
     "ORDER BY F.duration_mins ASC " +
     "LIMIT ?";
+
+    
   private PreparedStatement oneHopSearchStmt;
 
   private static final String TWO_HOP_SEARCH_SQL = 
@@ -160,10 +163,10 @@ public class Query extends QueryAbstract {
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_createCustomer(String username, String password, int initAmount) {
-    // TODO: YOUR CODE HERE
 
-    // check that initAmount >= 0 first
+
     try{
+      // check that initAmount >= 0 first
       if (initAmount < 0){
         return "Failed to create user\n";
       }
@@ -218,7 +221,6 @@ public class Query extends QueryAbstract {
 
       // add together, sort in ascending order, then cut off rest 
 
-      
       // one hop itineraries
       oneHopSearchStmt.setString(1, originCity);
       oneHopSearchStmt.setString(2, destinationCity);
@@ -308,13 +310,13 @@ public class Query extends QueryAbstract {
         int result_capacity = (int) it[9];
         int result_price = (int) it[10];
 
-        sb.append("Itinerary " + index + ": " + result_numFlights + " flights(s), " + 
+        sb.append("Itinerary " + index + ": " + result_numFlights + " flight(s), " + 
                   result_totalDuration + " minutes\n");
         
-        sb.append("ID: " + result_fid + " Day: " + result_dayOfMonth + " Carrier: " + result_carrierId + " Number: "
-                  + result_carrierNum + " Origin: " + result_originCity + " Destination: "
-                  + result_destCity + " Duration: " + result_duration + " Capacity: " + result_capacity
-                  + " Price: " + result_price + "\n");
+        sb.append("ID:" + result_fid + " Day:" + result_dayOfMonth + " Carrier:" + result_carrierId + " Number:"
+                  + result_carrierNum + " Origin:" + result_originCity + " Destination:"
+                  + result_destCity + " Duration:" + result_duration + " Capacity:" + result_capacity
+                  + " Price:" + result_price + "\n");
 
         index++;
 
@@ -332,10 +334,10 @@ public class Query extends QueryAbstract {
         int result_capacity2 = (int) it[18];
         int result_price2 = (int) it[19];
         
-        sb.append("ID: " + result_fid2 + " Day: " + result_dayOfMonth2 + " Carrier: " + result_carrierId2 + " Number: "
-                  + result_carrierNum2 + " Origin: " + result_originCity2 + " Destination: "
-                  + result_destCity2 + " Duration: " + result_duration2 + " Capacity: " + result_capacity2
-                  + " Price: " + result_price2 + "\n");
+        sb.append("ID:" + result_fid2 + " Day:" + result_dayOfMonth2 + " Carrier:" + result_carrierId2 + " Number:"
+                  + result_carrierNum2 + " Origin:" + result_originCity2 + " Destination:"
+                  + result_destCity2 + " Duration:" + result_duration2 + " Capacity:" + result_capacity2
+                  + " Price:" + result_price2 + "\n");
 
       }
 
