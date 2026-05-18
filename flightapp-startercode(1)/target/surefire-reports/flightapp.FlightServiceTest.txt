@@ -1,12 +1,21 @@
 -------------------------------------------------------------------------------
 Test set: flightapp.FlightServiceTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 6, Errors: 0, Skipped: 0, Time elapsed: 2.608 s <<< FAILURE! - in flightapp.FlightServiceTest
-flightapp.FlightServiceTest.runTest[0]  Time elapsed: 0.091 s  <<< FAILURE!
+Tests run: 6, Failures: 5, Errors: 0, Skipped: 0, Time elapsed: 2.515 s <<< FAILURE! - in flightapp.FlightServiceTest
+flightapp.FlightServiceTest.runTest[0]  Time elapsed: 0.06 s  <<< FAILURE!
 java.lang.AssertionError: 
 Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_lessThanN.test.txt. Actual outcome were: 
 ---Terminal 0 begin
-Failed to search
+Itinerary 0: 1 flight(s), 242 minutes
+   ID:4486 Day:1 Carrier:DL Number:739 Origin:Seattle, WA Destination:Austin, TX Duration:242 Capacity:133 Price:392
+Itinerary 1: 1 flight(s), 249 minutes
+   ID:3655 Day:1 Carrier:AS Number:318 Origin:Seattle, WA Destination:Austin, TX Duration:249 Capacity:48 Price:307
+Itinerary 2: 1 flight(s), 250 minutes
+   ID:3453 Day:1 Carrier:AS Number:502 Origin:Seattle, WA Destination:Austin, TX Duration:250 Capacity:149 Price:582
+Itinerary 3: 1 flight(s), 267 minutes
+   ID:4488 Day:1 Carrier:DL Number:831 Origin:Seattle, WA Destination:Austin, TX Duration:267 Capacity:133 Price:498
+Itinerary 4: 1 flight(s), 272 minutes
+   ID:3201 Day:1 Carrier:AS Number:594 Origin:Seattle, WA Destination:Austin, TX Duration:272 Capacity:222 Price:380
 Goodbye
 ---Terminal 0 end
 
@@ -31,13 +40,29 @@ Goodbye
 
 	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
 
-flightapp.FlightServiceTest.runTest[1]  Time elapsed: 1.04 s  <<< FAILURE!
+flightapp.FlightServiceTest.runTest[1]  Time elapsed: 1.065 s  <<< FAILURE!
 java.lang.AssertionError: 
 Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_sortAllItinerariesOnDuration.test.txt. Actual outcome were: 
 ---Terminal 0 begin
 Created user user1
 Logged in as user1
-Failed to search
+Itinerary 0: 1 flight(s), 251 minutes
+   ID:270298 Day:15 Carrier:AS Number:505 Origin:Austin, TX Destination:Seattle, WA Duration:251 Capacity:149 Price:536
+Itinerary 1: 1 flight(s), 257 minutes
+   ID:271817 Day:15 Carrier:DL Number:831 Origin:Austin, TX Destination:Seattle, WA Duration:257 Capacity:153 Price:465
+Itinerary 2: 1 flight(s), 260 minutes
+   ID:269938 Day:15 Carrier:AS Number:313 Origin:Austin, TX Destination:Seattle, WA Duration:260 Capacity:222 Price:532
+Itinerary 3: 1 flight(s), 263 minutes
+   ID:270465 Day:15 Carrier:AS Number:595 Origin:Austin, TX Destination:Seattle, WA Duration:263 Capacity:48 Price:214
+Itinerary 4: 1 flight(s), 264 minutes
+   ID:270378 Day:15 Carrier:AS Number:723 Origin:Austin, TX Destination:Seattle, WA Duration:264 Capacity:149 Price:169
+Itinerary 5: 1 flight(s), 282 minutes
+   ID:271513 Day:15 Carrier:DL Number:780 Origin:Austin, TX Destination:Seattle, WA Duration:282 Capacity:133 Price:399
+Itinerary 6: 1 flight(s), 292 minutes
+   ID:271529 Day:15 Carrier:DL Number:739 Origin:Austin, TX Destination:Seattle, WA Duration:292 Capacity:133 Price:125
+Itinerary 7: 2 flight(s), 315 minutes
+   ID:280992 Day:15 Carrier:UA Number:723 Origin:Austin, TX Destination:Houston, TX Duration:51 Capacity:191 Price:101
+   ID:269967 Day:15 Carrier:AS Number:453 Origin:Houston, TX Destination:Seattle, WA Duration:264 Capacity:222 Price:158
 Goodbye
 ---Terminal 0 end
 
@@ -71,11 +96,12 @@ Goodbye
 
 	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
 
-flightapp.FlightServiceTest.runTest[2]  Time elapsed: 0.067 s  <<< FAILURE!
+flightapp.FlightServiceTest.runTest[2]  Time elapsed: 0.045 s  <<< FAILURE!
 java.lang.AssertionError: 
 Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_basic.test.txt. Actual outcome were: 
 ---Terminal 0 begin
-Failed to search
+Itinerary 0: 1 flight(s), 299 minutes
+   ID:3607 Day:1 Carrier:AS Number:306 Origin:Seattle, WA Destination:Boston, MA Duration:299 Capacity:48 Price:555
 Goodbye
 ---Terminal 0 end
 
@@ -92,31 +118,26 @@ Goodbye
 
 	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
 
-flightapp.FlightServiceTest.runTest[3]  Time elapsed: 0.058 s  <<< FAILURE!
-java.lang.AssertionError: 
-Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_emptySearch.test.txt. Actual outcome were: 
----Terminal 0 begin
-Failed to search
-Goodbye
----Terminal 0 end
-
-
-Possible outcomes were: 
-===== Outcome 0 =====
----Terminal 0 begin
-No flights match your selection
-Goodbye
----Terminal 0 end
-
-
-
-	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
-
-flightapp.FlightServiceTest.runTest[4]  Time elapsed: 0.055 s  <<< FAILURE!
+flightapp.FlightServiceTest.runTest[4]  Time elapsed: 0.022 s  <<< FAILURE!
 java.lang.AssertionError: 
 Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_truncatesToN.test.txt. Actual outcome were: 
 ---Terminal 0 begin
-Failed to search
+Itinerary 0: 1 flight(s), 299 minutes
+   ID:3607 Day:1 Carrier:AS Number:306 Origin:Seattle, WA Destination:Boston, MA Duration:299 Capacity:48 Price:555
+Itinerary 1: 1 flight(s), 300 minutes
+   ID:4265 Day:1 Carrier:B6 Number:198 Origin:Seattle, WA Destination:Boston, MA Duration:300 Capacity:379 Price:412
+Itinerary 2: 1 flight(s), 301 minutes
+   ID:3373 Day:1 Carrier:AS Number:460 Origin:Seattle, WA Destination:Boston, MA Duration:301 Capacity:149 Price:178
+Itinerary 3: 1 flight(s), 305 minutes
+   ID:5664 Day:1 Carrier:DL Number:459 Origin:Seattle, WA Destination:Boston, MA Duration:305 Capacity:246 Price:428
+Itinerary 4: 1 flight(s), 307 minutes
+   ID:5674 Day:1 Carrier:DL Number:473 Origin:Seattle, WA Destination:Boston, MA Duration:307 Capacity:246 Price:523
+Itinerary 5: 1 flight(s), 315 minutes
+   ID:3062 Day:1 Carrier:AS Number:424 Origin:Seattle, WA Destination:Boston, MA Duration:315 Capacity:222 Price:449
+Itinerary 6: 1 flight(s), 328 minutes
+   ID:3106 Day:1 Carrier:AS Number:536 Origin:Seattle, WA Destination:Boston, MA Duration:328 Capacity:222 Price:175
+Itinerary 7: 1 flight(s), 331 minutes
+   ID:4281 Day:1 Carrier:B6 Number:398 Origin:Seattle, WA Destination:Boston, MA Duration:331 Capacity:379 Price:261
 Goodbye
 ---Terminal 0 end
 
@@ -147,13 +168,26 @@ Goodbye
 
 	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
 
-flightapp.FlightServiceTest.runTest[5]  Time elapsed: 0.958 s  <<< FAILURE!
+flightapp.FlightServiceTest.runTest[5]  Time elapsed: 0.942 s  <<< FAILURE!
 java.lang.AssertionError: 
 Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_preferDirect.test.txt. Actual outcome were: 
 ---Terminal 0 begin
 Created user user1
 Logged in as user1
-Failed to search
+Itinerary 0: 1 flight(s), 251 minutes
+   ID:270298 Day:15 Carrier:AS Number:505 Origin:Austin, TX Destination:Seattle, WA Duration:251 Capacity:149 Price:536
+Itinerary 1: 1 flight(s), 257 minutes
+   ID:271817 Day:15 Carrier:DL Number:831 Origin:Austin, TX Destination:Seattle, WA Duration:257 Capacity:153 Price:465
+Itinerary 2: 1 flight(s), 260 minutes
+   ID:269938 Day:15 Carrier:AS Number:313 Origin:Austin, TX Destination:Seattle, WA Duration:260 Capacity:222 Price:532
+Itinerary 3: 1 flight(s), 263 minutes
+   ID:270465 Day:15 Carrier:AS Number:595 Origin:Austin, TX Destination:Seattle, WA Duration:263 Capacity:48 Price:214
+Itinerary 4: 1 flight(s), 264 minutes
+   ID:270378 Day:15 Carrier:AS Number:723 Origin:Austin, TX Destination:Seattle, WA Duration:264 Capacity:149 Price:169
+Itinerary 5: 1 flight(s), 282 minutes
+   ID:271513 Day:15 Carrier:DL Number:780 Origin:Austin, TX Destination:Seattle, WA Duration:282 Capacity:133 Price:399
+Itinerary 6: 1 flight(s), 292 minutes
+   ID:271529 Day:15 Carrier:DL Number:739 Origin:Austin, TX Destination:Seattle, WA Duration:292 Capacity:133 Price:125
 Goodbye
 ---Terminal 0 end
 

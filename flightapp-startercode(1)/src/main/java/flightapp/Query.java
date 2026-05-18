@@ -314,8 +314,8 @@ public class Query extends QueryAbstract {
                   result_totalDuration + " minutes\n");
         
         sb.append("   ID:" + result_fid + " Day:" + result_dayOfMonth + " Carrier:" + result_carrierId + " Number:"
-                  + result_carrierNum + " Origin:" + result_originCity + " Destination:"
-                  + result_destCity + " Duration:" + result_duration + " Capacity:" + result_capacity
+                  + result_carrierNum + " Origin:'" + result_originCity + "' Destination:'"
+                  + result_destCity + "' Duration:" + result_duration + " Capacity:" + result_capacity
                   + " Price:" + result_price + "\n");
 
         index++;
@@ -335,8 +335,8 @@ public class Query extends QueryAbstract {
         int result_price2 = (int) it[19];
         
         sb.append("   ID:" + result_fid2 + " Day:" + result_dayOfMonth2 + " Carrier:" + result_carrierId2 + " Number:"
-                  + result_carrierNum2 + " Origin:" + result_originCity2 + " Destination:"
-                  + result_destCity2 + " Duration:" + result_duration2 + " Capacity:" + result_capacity2
+                  + result_carrierNum2 + " Origin:'" + result_originCity2 + "' Destination:'"
+                  + result_destCity2 + "' Duration:" + result_duration2 + " Capacity:" + result_capacity2
                   + " Price:" + result_price2 + "\n");
 
       }
