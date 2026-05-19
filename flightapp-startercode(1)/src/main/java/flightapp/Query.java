@@ -237,6 +237,7 @@ public class Query extends QueryAbstract {
       // compare password to password in database
       if (PasswordUtils.plaintextMatchesSaltedHash(password, saltedHashPass)){
         loggedUser = username.toLowerCase();
+        searchResults = new ArrayList<>();
         return "Logged in as " + username + "\n";
       }
       else{
@@ -414,14 +415,20 @@ public class Query extends QueryAbstract {
         twoHopResults.close();
       }
 
+
+      searchResults = itineraries;
       // check if no search results
       if (itineraries.isEmpty()){
         return "No flights match your selection\n";
       }
 
       // sort results in ascending order
-      itineraries.sort(Comparator.comparingInt(a -> (int) a[1]));
+      itineraries.sort(Comparator.comparingInt((Object[] a) -> (int) a[1])
+                      .thenComparingInt(a -> (int) a[2]) // break tie with fid
+                      .thenComparingInt(a -> (int) a[0] == 2 ? (int) a[11] : -1)); // break tie with fid2 if indirect
       
+      
+
       // read itineraries and create return string
       int index = 0;
       for(Object[] it : itineraries) {
@@ -497,7 +504,7 @@ public class Query extends QueryAbstract {
       }
 
       // check itId validity
-      if (searchResults.isEmpty() || searchResults.get(itineraryId) == null){
+      if (searchResults.isEmpty() || searchResults.get(itineraryId) == null || itineraryId >= searchResults.size()){
         return "No such itinerary " + itineraryId + "\n";
       }
 
@@ -728,11 +735,13 @@ public class Query extends QueryAbstract {
 
       // get reservation info
       do {
+        int fid2 = resResults.getInt("fid2");
+        boolean dir = resResults.wasNull();
         Object[] rsv = {
           resResults.getInt("rid"),
           resResults.getInt("paid"),
           resResults.getInt("fid1"),
-          resResults.getInt("fid2")
+          dir ? -1 : fid2
         };
 
         reservations.add(rsv);
@@ -766,7 +775,7 @@ public class Query extends QueryAbstract {
           + "' Duration:" + duration + " Capacity:" + capacity + " Price:" + price + "\n");
 
         // check if reservation is direct
-        if ((int) rs[3] == 0){
+        if ((int) rs[3] == -1){
           continue;
         }
 
