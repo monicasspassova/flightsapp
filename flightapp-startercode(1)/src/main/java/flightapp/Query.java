@@ -149,6 +149,7 @@ public class Query extends QueryAbstract {
     try {
       clearResStmt.executeUpdate();
       clearUsersStmt.executeUpdate();
+      rid = 1;
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -193,13 +194,13 @@ public class Query extends QueryAbstract {
       }
       
       getPassStmt.clearParameters();
-      getPassStmt.setString(1, username.toUpperCase());
+      getPassStmt.setString(1, username.toLowerCase());
       ResultSet pass = getPassStmt.executeQuery();
       pass.next();
       byte[] saltedHashPass = pass.getBytes(1);
 
       if (PasswordUtils.plaintextMatchesSaltedHash(password, saltedHashPass)){
-        loggedUser = username.toUpperCase();
+        loggedUser = username.toLowerCase();
         return "Logged in as " + username + "\n";
       }
       else{
@@ -224,7 +225,7 @@ public class Query extends QueryAbstract {
 
       // check that user not already in db (need to execute query search)
       checkUsersStmt.clearParameters();
-      checkUsersStmt.setString(1, username.toUpperCase());
+      checkUsersStmt.setString(1, username.toLowerCase());
 
       ResultSet check = checkUsersStmt.executeQuery();
 
@@ -238,7 +239,7 @@ public class Query extends QueryAbstract {
 
       // create user and insert into table
       insertUserStmt.clearParameters();
-      insertUserStmt.setString(1, username.toUpperCase());
+      insertUserStmt.setString(1, username.toLowerCase());
       insertUserStmt.setBytes(2, dbPass);
       insertUserStmt.setInt(3, initAmount);
 
@@ -482,7 +483,6 @@ public class Query extends QueryAbstract {
         return "Cannot find unpaid reservation " + reservationId + " under user: " + loggedUser + "\n";
       }
 
-      reservation.next();
       int fid1 = reservation.getInt("fid1");
       int fid2 = reservation.getInt("fid2");
 
@@ -527,7 +527,7 @@ public class Query extends QueryAbstract {
       updateUserBalanceStmt.setString(2, loggedUser);
 
       updateUserBalanceStmt.executeUpdate();
-      return "Paid reservation: " + reservationId + " remaining balance:" + balance + "\n";
+      return "Paid reservation: " + reservationId + " remaining balance: " + balance + "\n";
 
     } catch (Exception e){
       return "Failed to pay for reservation " + reservationId + "\n";
@@ -539,7 +539,7 @@ public class Query extends QueryAbstract {
   public String transaction_reservations() {
     // TODO: YOUR CODE HERE
 
-
+    
     return "Failed to retrieve reservations\n";
   }
 
