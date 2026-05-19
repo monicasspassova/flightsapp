@@ -1,14 +1,23 @@
-# create users in different terminals and then login to user not created in current terminal
+# create users in different terminals and then login to user not created in current terminal, test for wrong login info
 
 # Terminal 1's commands:
 create user1 pwd1 100
+login user2 pwd1
 login user2 pwd2
 quit
 *
 
 # Output for Terminal 1
-# Case 1: terminal 1 succeeds and terminal 2 fails
+# Case 1: terminal 1 executes before terminal 2
 Created user user1
+Login failed
+Login failed
+Goodbye
+|
+
+# Case 2: terminal 2 executes before terminal 1
+Created user user1
+Login failed
 Logged in as user2
 Goodbye
 *
@@ -17,13 +26,22 @@ Goodbye
 
 # Terminal 2's commands:
 create user2 pwd2 100
+login user1 pwd2
 login user1 pwd1
 quit
 *
 
 # Output for Terminal 2
-# Case 1: terminal 1 succeeds and 2 fails
+# Case 1: terminal 1 executes before terminal 2
 Created user user2
+Login failed
 Logged in as user1
+Goodbye
+|
+
+# Case 2: terminal 2 executes before terminal 1
+Created user user2
+Login failed
+Login failed
 Goodbye
 *

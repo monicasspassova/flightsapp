@@ -227,8 +227,6 @@ public class Query extends QueryAbstract {
       getPassStmt.setString(1, username.toLowerCase());
       ResultSet pass = getPassStmt.executeQuery();
 
-      
-
       // read password data
       pass.next();
       byte[] saltedHashPass = pass.getBytes(1);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="flightapp.FlightServiceTest" time="1.929" tests="1" errors="0" skipped="0" failures="1">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="flightapp.FlightServiceTest" time="2.117" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -7,14 +7,14 @@
     <property name="flightapp.testcase" value="cases"/>
     <property name="java.vm.vendor" value="Red Hat, Inc."/>
     <property name="sun.arch.data.model" value="64"/>
-    <property name="flightapp.testcases" value="cases/transaction/login/login_loginOtherSessionUser.test.txt"/>
+    <property name="flightapp.testcases" value="cases/transaction/reservations/reservations_multipleUsers.test.txt"/>
     <property name="java.vendor.url" value="https://www.redhat.com/"/>
     <property name="os.name" value="Linux"/>
     <property name="java.vm.specification.version" value="21"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-21-openjdk/lib"/>
-    <property name="sun.java.command" value="org.apache.maven.surefire.booter.ForkedBooter /homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/surefire 2026-05-19T12-18-47_617-jvmRun1 surefire5861471973602077706tmp surefire_09063433915385311280tmp"/>
+    <property name="sun.java.command" value="org.apache.maven.surefire.booter.ForkedBooter /homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/surefire 2026-05-19T13-06-58_749-jvmRun1 surefire4696377451365254164tmp surefire_03418578997397073139tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="test" value="flightapp.FlightServiceTest"/>
     <property name="surefire.test.class.path" value="/homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/test-classes:/homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/classes:/homes/iws/mspass/.m2/repository/junit/junit/4.13/junit-4.13.jar:/homes/iws/mspass/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/homes/iws/mspass/.m2/repository/org/postgresql/postgresql/42.7.5/postgresql-42.7.5.jar:/homes/iws/mspass/.m2/repository/org/checkerframework/checker-qual/3.48.3/checker-qual-3.48.3.jar:/homes/iws/mspass/.m2/repository/org/mybatis/mybatis/3.5.7/mybatis-3.5.7.jar:/homes/iws/mspass/.m2/repository/commons-io/commons-io/2.8.0/commons-io-2.8.0.jar:/homes/iws/mspass/flightsapp/flightapp-startercode(1)/distributed.jar:"/>
@@ -56,38 +56,7 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="runTest[0]" classname="flightapp.FlightServiceTest" time="1.593">
-    <failure message="Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/login/login_loginOtherSessionUser.test.txt. Actual outcome were: &#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user2&#10;Goodbye&#10;---Terminal 0 end&#10;---Terminal 1 begin&#10;Created user user2&#10;Login failed&#10;Goodbye&#10;---Terminal 1 end&#10;&#10;&#10;Possible outcomes were: &#10;===== Outcome 0 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user2&#10;Goodbye&#10;---Terminal 0 end&#10;---Terminal 1 begin&#10;Created user user2&#10;Logged in as user1&#10;Goodbye&#10;---Terminal 1 end&#10;&#10;&#10;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
-Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/login/login_loginOtherSessionUser.test.txt. Actual outcome were: 
----Terminal 0 begin
-Created user user1
-Logged in as user2
-Goodbye
----Terminal 0 end
----Terminal 1 begin
-Created user user2
-Login failed
-Goodbye
----Terminal 1 end
-
-
-Possible outcomes were: 
-===== Outcome 0 =====
----Terminal 0 begin
-Created user user1
-Logged in as user2
-Goodbye
----Terminal 0 end
----Terminal 1 begin
-Created user user2
-Logged in as user1
-Goodbye
----Terminal 1 end
-
-
-
-	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
-]]></failure>
+  <testcase name="runTest[0]" classname="flightapp.FlightServiceTest" time="1.721">
     <system-out><![CDATA[Running test setup...
 ... using dbconn.properties for test credentials
 ... attempting to connect as mspass@flights to server localhost
@@ -95,7 +64,7 @@ Goodbye
 ... running createTables.sql
 
 Starting tests
-Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/login/login_loginOtherSessionUser.test.txt
+Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/reservations/reservations_multipleUsers.test.txt
 ]]></system-out>
   </testcase>
 </testsuite>
