@@ -99,8 +99,8 @@ public class Query extends QueryAbstract {
 
   private static final String FIND_RESERVATION_SQL = 
     "SELECT * " +
-    "FROM Reservations_mspass as R, Flights as F " +
-    "WHERE R.rid = ? AND R.userid = ? AND R.paid = 0";
+    "FROM Reservations_mspass " +
+    "WHERE rid = ? AND userid = ? AND paid = 0";
   private PreparedStatement findReservationStmt;
 
   private static final String FIND_PRICE_SQL =
@@ -111,7 +111,8 @@ public class Query extends QueryAbstract {
 
   private static final String GET_USER_BALANCE_SQL =
     "SELECT balance " +
-    "FROM Users_mspass ";
+    "FROM Users_mspass " +
+    "WHERE username = ?";
   private PreparedStatement getUserBalanceStmt;
 
   private static final String UPDATE_PAID_RES_SQL =
@@ -477,27 +478,39 @@ public class Query extends QueryAbstract {
       findReservationStmt.setString(2, loggedUser);
       ResultSet reservation = findReservationStmt.executeQuery();
 
-      if (reservation.isLast()){
+      if (!reservation.next()){
         return "Cannot find unpaid reservation " + reservationId + " under user: " + loggedUser + "\n";
       }
 
+      reservation.next();
       int fid1 = reservation.getInt("fid1");
       int fid2 = reservation.getInt("fid2");
 
+      if (reservation.wasNull()){
+        fid2 = -1;
+      }
+
+      // find price of reservation
       int totalPrice = 0;
       findPriceStmt.clearParameters();
       findPriceStmt.setInt(1, fid1);
       ResultSet res = findPriceStmt.executeQuery();
-
+      res.next();
       totalPrice += res.getInt("price");
-      findPriceStmt.setInt(1,fid2);
-      res = findPriceStmt.executeQuery();
-      if (res != null){
+      
+      if (fid2 != -1){
+        findPriceStmt.setInt(1,fid2);
+        res = findPriceStmt.executeQuery();
+        res.next();
         totalPrice += res.getInt("price");
       }
 
       // determine if we have enough to pay (get user balance)
+      getUserBalanceStmt.clearParameters();
+      getUserBalanceStmt.setString(1, loggedUser);
       ResultSet bal = getUserBalanceStmt.executeQuery();
+
+      bal.next();
       int balance = bal.getInt("balance");
 
       if (balance < totalPrice){
@@ -505,7 +518,7 @@ public class Query extends QueryAbstract {
       }
 
       // we have enough to pay, need to update reservations (paid col) and users (subtract balance)
-      balance = totalPrice - balance;
+      balance = balance - totalPrice;
 
       updatePaidResStmt.setInt(1, reservationId);
       updatePaidResStmt.executeUpdate();
