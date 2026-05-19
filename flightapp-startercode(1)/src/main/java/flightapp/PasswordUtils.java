@@ -25,7 +25,7 @@ public class PasswordUtils {
     byte[] salt = generateSalt();
     byte[] saltedHash = hashWithSalt(password, salt);
 
-    // TODO: combine the salt and the salted hash into a single byte array that
+    // combine the salt and the salted hash into a single byte array that
     // can be written to the database
     byte[] saltedHashedPassword = new byte[salt.length + saltedHash.length];
     
@@ -40,7 +40,7 @@ public class PasswordUtils {
    * Verifies whether the plaintext password can be hashed to provided salted hashed password.
    */
   public static boolean plaintextMatchesSaltedHash(String plaintext, byte[] saltedHashed) {
-    // TODO: extract the salt from the byte array (ie, undo the logic you implemented in 
+    // extract the salt from the byte array (ie, undo the logic you implemented in 
     // saltAndHashPassword), then use it to check whether the user-provided plaintext
     // password matches the password hash.
     byte[] salt = new byte[SALT_LENGTH_BYTES];
@@ -62,7 +62,6 @@ public class PasswordUtils {
    * Generate a small bit of randomness to serve as a password "salt"
    */
   static byte[] generateSalt() {
-    // TODO: implement this.
     Random rnd = new Random();
     byte[] salt = new byte[SALT_LENGTH_BYTES];
     rnd.nextBytes(salt);

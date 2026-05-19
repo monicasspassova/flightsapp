@@ -1,0 +1,15 @@
+# book invalid itinerary
+
+# commands to execute:
+create user1 password 10000
+login user1 password
+book 0
+quit
+*
+
+# expected output:
+Created user user1
+Logged in as user1
+No such itinerary 0
+Goodbye
+*
