@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLTransientException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -206,10 +207,16 @@ public class Query extends QueryAbstract {
       if (loggedUser != null){
         return "User already logged in\n";
       }
-      
+
+      conn.setAutoCommit(false);
+
       getPassStmt.clearParameters();
       getPassStmt.setString(1, username.toLowerCase());
       ResultSet pass = getPassStmt.executeQuery();
+
+      conn.commit();
+      conn.setAutoCommit(true);
+
       pass.next();
       byte[] saltedHashPass = pass.getBytes(1);
 
@@ -221,6 +228,21 @@ public class Query extends QueryAbstract {
         return "Login failed\n";
       }
 
+    } catch (SQLException e){
+      String ret = "TXN exception";
+      try {
+        if (conn != null) {
+          conn.rollback(); 
+          conn.setAutoCommit(true);
+        }
+      } catch (SQLException rollbackEx) {
+        ret = "rollback exception";
+        rollbackEx.printStackTrace();
+
+      } finally {
+        return ret;
+      }
+
     } catch (Exception e) {
       return "Login failed\n";
     }
@@ -230,19 +252,17 @@ public class Query extends QueryAbstract {
   /* See QueryAbstract.java for javadoc */
   public String transaction_createCustomer(String username, String password, int initAmount) {
 
-
     try{
       // check that initAmount >= 0 first
       if (initAmount < 0){
         return "Failed to create user\n";
       }
 
+      conn.setAutoCommit(false);
       // check that user not already in db (need to execute query search)
       checkUsersStmt.clearParameters();
       checkUsersStmt.setString(1, username.toLowerCase());
-
       ResultSet check = checkUsersStmt.executeQuery();
-
 
       if (check.next() && check.getInt(1) > 0 ){
         return "Failed to create user\n";
@@ -256,13 +276,27 @@ public class Query extends QueryAbstract {
       insertUserStmt.setString(1, username.toLowerCase());
       insertUserStmt.setBytes(2, dbPass);
       insertUserStmt.setInt(3, initAmount);
-
       insertUserStmt.executeUpdate();
+      conn.commit();
+      conn.setAutoCommit(true);
 
       return "Created user " + username +"\n";
 
 
-    } catch (Exception e) {
+    } catch (SQLException e){
+      String ret = "TXN exception";
+      try {
+        if (conn != null) {
+          conn.rollback();
+          conn.setAutoCommit(true);
+        }
+      } catch (SQLException rollbackEx) {
+        ret = "rollback exception";
+        rollbackEx.printStackTrace();
+      } finally {
+        return ret;
+      }
+    }catch (Exception e) {
       e.printStackTrace();
       return "Failed to create user\n";
 
@@ -318,6 +352,7 @@ public class Query extends QueryAbstract {
       oneHopResults.close();
 
       if (!directFlight){
+
         twoHopSearchStmt.clearParameters();
         twoHopSearchStmt.setString(1, originCity);
         twoHopSearchStmt.setString(2, destinationCity);
@@ -436,11 +471,13 @@ public class Query extends QueryAbstract {
 
       Object[] itinerary = searchResults.get(itineraryId);
 
+      conn.setAutoCommit(false);
       // check if day already booked
       checkBookDayStmt.clearParameters();
       checkBookDayStmt.setInt(1, (int) itinerary[3]);
       checkBookDayStmt.setString(2, loggedUser);
       ResultSet result = checkBookDayStmt.executeQuery();
+
       result.next();
 
       if(result.getInt(1) > 0){
@@ -461,11 +498,26 @@ public class Query extends QueryAbstract {
       }
 
       bookReservationStmt.executeUpdate();
+      conn.commit();
+      conn.setAutoCommit(true);
 
       rid += 1;
 
       return "Booked flight(s), reservation ID: " + (rid-1) + "\n";
 
+    } catch (SQLException e){
+      String ret = "TXN exception";
+      try {
+        if (conn != null) {
+          conn.rollback();
+          conn.setAutoCommit(true);
+        }
+      } catch (SQLException rollbackEx) {
+        ret = "rollback exception";
+        rollbackEx.printStackTrace();
+      } finally {
+        return ret;
+      }
     } catch (Exception e){
       return "Booking failed\n";
     }
@@ -474,7 +526,6 @@ public class Query extends QueryAbstract {
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_pay(int reservationId) {
-    // TODO: YOUR CODE HERE
     try{
 
       // check if logged in yet or not
@@ -482,6 +533,7 @@ public class Query extends QueryAbstract {
         return "Cannot pay, not logged in\n";
       }
 
+      conn.setAutoCommit(false);
       // find reservation
       findReservationStmt.clearParameters();
       findReservationStmt.setInt(1, reservationId);
@@ -501,6 +553,7 @@ public class Query extends QueryAbstract {
 
       // find price of reservation
       int totalPrice = 0;
+
       findPriceStmt.clearParameters();
       findPriceStmt.setInt(1, fid1);
       ResultSet res = findPriceStmt.executeQuery();
@@ -515,6 +568,7 @@ public class Query extends QueryAbstract {
       }
 
       // determine if we have enough to pay (get user balance)
+
       getUserBalanceStmt.clearParameters();
       getUserBalanceStmt.setString(1, loggedUser);
       ResultSet bal = getUserBalanceStmt.executeQuery();
@@ -529,17 +583,32 @@ public class Query extends QueryAbstract {
       // we have enough to pay, need to update reservations (paid col) and users (subtract balance)
       balance = balance - totalPrice;
 
+      updatePaidResStmt.clearParameters();
       updatePaidResStmt.setInt(1, reservationId);
       updatePaidResStmt.executeUpdate();
-
       updateUserBalanceStmt.setInt(1, balance);
       updateUserBalanceStmt.setString(2, loggedUser);
-
       updateUserBalanceStmt.executeUpdate();
+      conn.commit();
+      conn.setAutoCommit(true);
 
       return "Paid reservation: " + reservationId + " remaining balance: " + balance + "\n";
 
+    } catch (SQLException e){
+      String ret = "TXN exception";
+      try {
+        if (conn != null) {
+          conn.rollback();
+          conn.setAutoCommit(true);
+        }
+      } catch (SQLException rollbackEx) {
+        ret = "rollback exception";
+        rollbackEx.printStackTrace();
+      } finally {
+        return ret;
+      }
     } catch (Exception e){
+
       return "Failed to pay for reservation " + reservationId + "\n";
     }
     
@@ -547,7 +616,6 @@ public class Query extends QueryAbstract {
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_reservations() {
-    // TODO: YOUR CODE HERE
     StringBuffer sb = new StringBuffer();
     ArrayList<Object[]> reservations = new ArrayList<>();
 
@@ -558,6 +626,7 @@ public class Query extends QueryAbstract {
         return "Cannot view reservations, not logged in\n";
       }
 
+      conn.setAutoCommit(false);
       getReservationsStmt.clearParameters();
       getReservationsStmt.setString(1, loggedUser);
       ResultSet resResults = getReservationsStmt.executeQuery();
@@ -627,9 +696,25 @@ public class Query extends QueryAbstract {
         
       }
 
+      conn.commit();
+      conn.setAutoCommit(true);
+      
       return sb.toString();
 
 
+    } catch (SQLException e){
+      String ret = "TXN exception";
+      try {
+        if (conn != null) {
+          conn.rollback();
+          conn.setAutoCommit(true);
+        }
+      } catch (SQLException rollbackEx) {
+        ret = "rollback exception";
+        rollbackEx.printStackTrace();
+      } finally {
+        return ret;
+      }
     } catch (Exception e){
       return "Failed to retrieve reservations\n";
     }

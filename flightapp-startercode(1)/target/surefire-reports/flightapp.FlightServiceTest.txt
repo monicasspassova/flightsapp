@@ -1,4 +1,164 @@
 -------------------------------------------------------------------------------
 Test set: flightapp.FlightServiceTest
 -------------------------------------------------------------------------------
-Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 20.697 s - in flightapp.FlightServiceTest
+Tests run: 10, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 10.41 s <<< FAILURE! - in flightapp.FlightServiceTest
+flightapp.FlightServiceTest.runTest[3]  Time elapsed: 1.032 s  <<< FAILURE!
+java.lang.AssertionError: 
+Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_2Users1FlightNoCapacity.test.txt. Actual outcome were: 
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booked flight(s), reservation ID: 2
+Goodbye
+---Terminal 1 end
+
+
+Possible outcomes were: 
+===== Outcome 0 =====
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booking failed
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 1 end
+
+===== Outcome 1 =====
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booking failed
+Goodbye
+---Terminal 1 end
+
+
+
+	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
+
+flightapp.FlightServiceTest.runTest[4]  Time elapsed: 1.062 s  <<< FAILURE!
+java.lang.AssertionError: 
+Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_2Users2Flights.test.txt. Actual outcome were: 
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 299 minutes
+    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:299 Capacity:48 Price:555
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 306 minutes
+    ID:24046 Day:2 Carrier:DL CarrierNum:473 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:306 Capacity:246 Price:108
+Booking failed
+Goodbye
+---Terminal 1 end
+
+
+Possible outcomes were: 
+===== Outcome 0 =====
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 299 minutes
+    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:299 Capacity:48 Price:555
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 306 minutes
+    ID:24046 Day:2 Carrier:DL CarrierNum:473 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:306 Capacity:246 Price:108
+Booked flight(s), reservation ID: 2
+Goodbye
+---Terminal 1 end
+
+===== Outcome 1 =====
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 299 minutes
+    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:299 Capacity:48 Price:555
+Booked flight(s), reservation ID: 2
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 306 minutes
+    ID:24046 Day:2 Carrier:DL CarrierNum:473 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:306 Capacity:246 Price:108
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 1 end
+
+
+
+	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
+

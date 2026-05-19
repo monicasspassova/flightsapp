@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="flightapp.FlightServiceTest" time="20.697" tests="20" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="flightapp.FlightServiceTest" time="10.41" tests="10" errors="0" skipped="0" failures="2">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -7,14 +7,14 @@
     <property name="flightapp.testcase" value="cases"/>
     <property name="java.vm.vendor" value="Red Hat, Inc."/>
     <property name="sun.arch.data.model" value="64"/>
-    <property name="flightapp.testcases" value="cases/no_transaction"/>
+    <property name="flightapp.testcases" value="cases/transaction/"/>
     <property name="java.vendor.url" value="https://www.redhat.com/"/>
     <property name="os.name" value="Linux"/>
     <property name="java.vm.specification.version" value="21"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-21-openjdk/lib"/>
-    <property name="sun.java.command" value="org.apache.maven.surefire.booter.ForkedBooter /homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/surefire 2026-05-19T00-46-11_770-jvmRun1 surefire11239785502115816495tmp surefire_08437437392861554828tmp"/>
+    <property name="sun.java.command" value="org.apache.maven.surefire.booter.ForkedBooter /homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/surefire 2026-05-19T08-04-11_770-jvmRun1 surefire6791973075938342717tmp surefire_010192850876470598906tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="test" value="flightapp.FlightServiceTest"/>
     <property name="surefire.test.class.path" value="/homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/test-classes:/homes/iws/mspass/flightsapp/flightapp-startercode(1)/target/classes:/homes/iws/mspass/.m2/repository/junit/junit/4.13/junit-4.13.jar:/homes/iws/mspass/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/homes/iws/mspass/.m2/repository/org/postgresql/postgresql/42.7.5/postgresql-42.7.5.jar:/homes/iws/mspass/.m2/repository/org/checkerframework/checker-qual/3.48.3/checker-qual-3.48.3.jar:/homes/iws/mspass/.m2/repository/org/mybatis/mybatis/3.5.7/mybatis-3.5.7.jar:/homes/iws/mspass/.m2/repository/commons-io/commons-io/2.8.0/commons-io-2.8.0.jar:/homes/iws/mspass/flightsapp/flightapp-startercode(1)/distributed.jar:"/>
@@ -56,7 +56,7 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="runTest[0]" classname="flightapp.FlightServiceTest" time="1.619">
+  <testcase name="runTest[0]" classname="flightapp.FlightServiceTest" time="0.745">
     <system-out><![CDATA[Running test setup...
 ... using dbconn.properties for test credentials
 ... attempting to connect as mspass@flights to server localhost
@@ -64,83 +64,277 @@
 ... running createTables.sql
 
 Starting tests
-Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/reservations/reservations_many.test.txt
+Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/create/create_2UsersDifferentName.test.txt
 ]]></system-out>
   </testcase>
-  <testcase name="runTest[1]" classname="flightapp.FlightServiceTest" time="1.316">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/reservations/reservations_basic.test.txt
+  <testcase name="runTest[1]" classname="flightapp.FlightServiceTest" time="1.071">
+    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_withoutSearch.test.txt
+]]></system-out>
+    <system-err><![CDATA[org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint "users_mspass_pkey"
+  Detail: Key (username)=(user1) already exists.
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2733)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2420)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:372)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:517)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:434)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:194)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:155)
+	at flightapp.Query.transaction_createCustomer(Query.java:269)
+	at flightapp.QueryAbstract.create(QueryAbstract.java:87)
+	at flightapp.FlightService.execute(FlightService.java:39)
+	at flightapp.FlightServiceTest$Session.call(FlightServiceTest.java:175)
+	at flightapp.FlightServiceTest$Session.call(FlightServiceTest.java:1)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+]]></system-err>
+  </testcase>
+  <testcase name="runTest[2]" classname="flightapp.FlightServiceTest" time="1.032">
+    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_1User1FlightTwice.test.txt
+]]></system-out>
+    <system-err><![CDATA[org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint "users_mspass_pkey"
+  Detail: Key (username)=(user1) already exists.
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2733)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2420)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:372)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:517)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:434)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:194)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:155)
+	at flightapp.Query.transaction_createCustomer(Query.java:269)
+	at flightapp.QueryAbstract.create(QueryAbstract.java:87)
+	at flightapp.FlightService.execute(FlightService.java:39)
+	at flightapp.FlightServiceTest$Session.call(FlightServiceTest.java:175)
+	at flightapp.FlightServiceTest$Session.call(FlightServiceTest.java:1)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+]]></system-err>
+  </testcase>
+  <testcase name="runTest[3]" classname="flightapp.FlightServiceTest" time="1.032">
+    <failure message="Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_2Users1FlightNoCapacity.test.txt. Actual outcome were: &#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Itinerary 0: 1 flight(s), 78 minutes&#10;    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:78 Capacity:143 Price:382&#10;Itinerary 1: 1 flight(s), 81 minutes&#10;    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:81 Capacity:175 Price:194&#10;Itinerary 2: 1 flight(s), 82 minutes&#10;    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:82 Capacity:1 Price:567&#10;Itinerary 3: 1 flight(s), 85 minutes&#10;    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:85 Capacity:80 Price:115&#10;Booked flight(s), reservation ID: 1&#10;Goodbye&#10;---Terminal 0 end&#10;---Terminal 1 begin&#10;Created user user2&#10;Logged in as user2&#10;Itinerary 0: 1 flight(s), 78 minutes&#10;    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:78 Capacity:143 Price:382&#10;Itinerary 1: 1 flight(s), 81 minutes&#10;    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:81 Capacity:175 Price:194&#10;Itinerary 2: 1 flight(s), 82 minutes&#10;    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:82 Capacity:1 Price:567&#10;Itinerary 3: 1 flight(s), 85 minutes&#10;    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:85 Capacity:80 Price:115&#10;Booked flight(s), reservation ID: 2&#10;Goodbye&#10;---Terminal 1 end&#10;&#10;&#10;Possible outcomes were: &#10;===== Outcome 0 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Itinerary 0: 1 flight(s), 78 minutes&#10;    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:78 Capacity:143 Price:382&#10;Itinerary 1: 1 flight(s), 81 minutes&#10;    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:81 Capacity:175 Price:194&#10;Itinerary 2: 1 flight(s), 82 minutes&#10;    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:82 Capacity:1 Price:567&#10;Itinerary 3: 1 flight(s), 85 minutes&#10;    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:85 Capacity:80 Price:115&#10;Booking failed&#10;Goodbye&#10;---Terminal 0 end&#10;---Terminal 1 begin&#10;Created user user2&#10;Logged in as user2&#10;Itinerary 0: 1 flight(s), 78 minutes&#10;    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:78 Capacity:143 Price:382&#10;Itinerary 1: 1 flight(s), 81 minutes&#10;    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:81 Capacity:175 Price:194&#10;Itinerary 2: 1 flight(s), 82 minutes&#10;    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:82 Capacity:1 Price:567&#10;Itinerary 3: 1 flight(s), 85 minutes&#10;    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:85 Capacity:80 Price:115&#10;Booked flight(s), reservation ID: 1&#10;Goodbye&#10;---Terminal 1 end&#10;&#10;===== Outcome 1 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Itinerary 0: 1 flight(s), 78 minutes&#10;    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:78 Capacity:143 Price:382&#10;Itinerary 1: 1 flight(s), 81 minutes&#10;    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:81 Capacity:175 Price:194&#10;Itinerary 2: 1 flight(s), 82 minutes&#10;    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:82 Capacity:1 Price:567&#10;Itinerary 3: 1 flight(s), 85 minutes&#10;    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:85 Capacity:80 Price:115&#10;Booked flight(s), reservation ID: 1&#10;Goodbye&#10;---Terminal 0 end&#10;---Terminal 1 begin&#10;Created user user2&#10;Logged in as user2&#10;Itinerary 0: 1 flight(s), 78 minutes&#10;    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:78 Capacity:143 Price:382&#10;Itinerary 1: 1 flight(s), 81 minutes&#10;    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:81 Capacity:175 Price:194&#10;Itinerary 2: 1 flight(s), 82 minutes&#10;    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:82 Capacity:1 Price:567&#10;Itinerary 3: 1 flight(s), 85 minutes&#10;    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:&apos;Providence, RI&apos; Dest:&apos;Washington, DC&apos; Duration:85 Capacity:80 Price:115&#10;Booking failed&#10;Goodbye&#10;---Terminal 1 end&#10;&#10;&#10;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_2Users1FlightNoCapacity.test.txt. Actual outcome were: 
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booked flight(s), reservation ID: 2
+Goodbye
+---Terminal 1 end
+
+
+Possible outcomes were: 
+===== Outcome 0 =====
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booking failed
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 1 end
+
+===== Outcome 1 =====
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 78 minutes
+    ID:421020 Day:22 Carrier:WN CarrierNum:2418 Origin:'Providence, RI' Dest:'Washington, DC' Duration:78 Capacity:143 Price:382
+Itinerary 1: 1 flight(s), 81 minutes
+    ID:422121 Day:22 Carrier:WN CarrierNum:824 Origin:'Providence, RI' Dest:'Washington, DC' Duration:81 Capacity:175 Price:194
+Itinerary 2: 1 flight(s), 82 minutes
+    ID:422887 Day:22 Carrier:YX CarrierNum:4545 Origin:'Providence, RI' Dest:'Washington, DC' Duration:82 Capacity:1 Price:567
+Itinerary 3: 1 flight(s), 85 minutes
+    ID:413470 Day:22 Carrier:OH CarrierNum:5138 Origin:'Providence, RI' Dest:'Washington, DC' Duration:85 Capacity:80 Price:115
+Booking failed
+Goodbye
+---Terminal 1 end
+
+
+
+	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
+]]></failure>
+    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_2Users1FlightNoCapacity.test.txt
 ]]></system-out>
   </testcase>
-  <testcase name="runTest[2]" classname="flightapp.FlightServiceTest" time="0.041">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/reservations/reservations_userNotLoggedIn.test.txt
+  <testcase name="runTest[4]" classname="flightapp.FlightServiceTest" time="1.062">
+    <failure message="Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_2Users2Flights.test.txt. Actual outcome were: &#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Itinerary 0: 1 flight(s), 299 minutes&#10;    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:&apos;Seattle, WA&apos; Dest:&apos;Boston, MA&apos; Duration:299 Capacity:48 Price:555&#10;Booked flight(s), reservation ID: 1&#10;Goodbye&#10;---Terminal 0 end&#10;---Terminal 1 begin&#10;Created user user2&#10;Logged in as user2&#10;Itinerary 0: 1 flight(s), 306 minutes&#10;    ID:24046 Day:2 Carrier:DL CarrierNum:473 Origin:&apos;Seattle, WA&apos; Dest:&apos;Boston, MA&apos; Duration:306 Capacity:246 Price:108&#10;Booking failed&#10;Goodbye&#10;---Terminal 1 end&#10;&#10;&#10;Possible outcomes were: &#10;===== Outcome 0 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Itinerary 0: 1 flight(s), 299 minutes&#10;    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:&apos;Seattle, WA&apos; Dest:&apos;Boston, MA&apos; Duration:299 Capacity:48 Price:555&#10;Booked flight(s), reservation ID: 1&#10;Goodbye&#10;---Terminal 0 end&#10;---Terminal 1 begin&#10;Created user user2&#10;Logged in as user2&#10;Itinerary 0: 1 flight(s), 306 minutes&#10;    ID:24046 Day:2 Carrier:DL CarrierNum:473 Origin:&apos;Seattle, WA&apos; Dest:&apos;Boston, MA&apos; Duration:306 Capacity:246 Price:108&#10;Booked flight(s), reservation ID: 2&#10;Goodbye&#10;---Terminal 1 end&#10;&#10;===== Outcome 1 =====&#10;---Terminal 0 begin&#10;Created user user1&#10;Logged in as user1&#10;Itinerary 0: 1 flight(s), 299 minutes&#10;    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:&apos;Seattle, WA&apos; Dest:&apos;Boston, MA&apos; Duration:299 Capacity:48 Price:555&#10;Booked flight(s), reservation ID: 2&#10;Goodbye&#10;---Terminal 0 end&#10;---Terminal 1 begin&#10;Created user user2&#10;Logged in as user2&#10;Itinerary 0: 1 flight(s), 306 minutes&#10;    ID:24046 Day:2 Carrier:DL CarrierNum:473 Origin:&apos;Seattle, WA&apos; Dest:&apos;Boston, MA&apos; Duration:306 Capacity:246 Price:108&#10;Booked flight(s), reservation ID: 1&#10;Goodbye&#10;---Terminal 1 end&#10;&#10;&#10;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+Failed: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_2Users2Flights.test.txt. Actual outcome were: 
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 299 minutes
+    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:299 Capacity:48 Price:555
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 306 minutes
+    ID:24046 Day:2 Carrier:DL CarrierNum:473 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:306 Capacity:246 Price:108
+Booking failed
+Goodbye
+---Terminal 1 end
+
+
+Possible outcomes were: 
+===== Outcome 0 =====
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 299 minutes
+    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:299 Capacity:48 Price:555
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 306 minutes
+    ID:24046 Day:2 Carrier:DL CarrierNum:473 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:306 Capacity:246 Price:108
+Booked flight(s), reservation ID: 2
+Goodbye
+---Terminal 1 end
+
+===== Outcome 1 =====
+---Terminal 0 begin
+Created user user1
+Logged in as user1
+Itinerary 0: 1 flight(s), 299 minutes
+    ID:3607 Day:1 Carrier:AS CarrierNum:306 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:299 Capacity:48 Price:555
+Booked flight(s), reservation ID: 2
+Goodbye
+---Terminal 0 end
+---Terminal 1 begin
+Created user user2
+Logged in as user2
+Itinerary 0: 1 flight(s), 306 minutes
+    ID:24046 Day:2 Carrier:DL CarrierNum:473 Origin:'Seattle, WA' Dest:'Boston, MA' Duration:306 Capacity:246 Price:108
+Booked flight(s), reservation ID: 1
+Goodbye
+---Terminal 1 end
+
+
+
+	at flightapp.FlightServiceTest.runTest(FlightServiceTest.java:523)
+]]></failure>
+    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/book/book_2Users2Flights.test.txt
 ]]></system-out>
   </testcase>
-  <testcase name="runTest[3]" classname="flightapp.FlightServiceTest" time="0.04">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_lessThanN.test.txt
+  <testcase name="runTest[5]" classname="flightapp.FlightServiceTest" time="1.088">
+    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/search/search_differentUsersSameQuery.test.txt
 ]]></system-out>
   </testcase>
-  <testcase name="runTest[4]" classname="flightapp.FlightServiceTest" time="1.32">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_sortAllItinerariesOnDuration.test.txt
+  <testcase name="runTest[6]" classname="flightapp.FlightServiceTest" time="0.991">
+    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/login/login_differentUsers.test.txt
 ]]></system-out>
   </testcase>
-  <testcase name="runTest[5]" classname="flightapp.FlightServiceTest" time="0.049">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_basic.test.txt
+  <testcase name="runTest[7]" classname="flightapp.FlightServiceTest" time="1.028">
+    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/login/login_sameUsers.test.txt
 ]]></system-out>
+    <system-err><![CDATA[org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint "users_mspass_pkey"
+  Detail: Key (username)=(user) already exists.
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2733)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2420)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:372)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:517)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:434)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:194)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:155)
+	at flightapp.Query.transaction_createCustomer(Query.java:269)
+	at flightapp.QueryAbstract.create(QueryAbstract.java:87)
+	at flightapp.FlightService.execute(FlightService.java:39)
+	at flightapp.FlightServiceTest$Session.call(FlightServiceTest.java:175)
+	at flightapp.FlightServiceTest$Session.call(FlightServiceTest.java:1)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+]]></system-err>
   </testcase>
-  <testcase name="runTest[6]" classname="flightapp.FlightServiceTest" time="0.018">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_emptySearch.test.txt
+  <testcase name="runTest[8]" classname="flightapp.FlightServiceTest" time="1.021">
+    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/login/login_createUserInOtherSession.test.txt
 ]]></system-out>
+    <system-err><![CDATA[org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint "users_mspass_pkey"
+  Detail: Key (username)=(user1) already exists.
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2733)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2420)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:372)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:517)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:434)
+	at org.postgresql.jdbc.PgPreparedStatement.executeWithFlags(PgPreparedStatement.java:194)
+	at org.postgresql.jdbc.PgPreparedStatement.executeUpdate(PgPreparedStatement.java:155)
+	at flightapp.Query.transaction_createCustomer(Query.java:269)
+	at flightapp.QueryAbstract.create(QueryAbstract.java:87)
+	at flightapp.FlightService.execute(FlightService.java:39)
+	at flightapp.FlightServiceTest$Session.call(FlightServiceTest.java:175)
+	at flightapp.FlightServiceTest$Session.call(FlightServiceTest.java:1)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+]]></system-err>
   </testcase>
-  <testcase name="runTest[7]" classname="flightapp.FlightServiceTest" time="0.042">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_truncatesToN.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[8]" classname="flightapp.FlightServiceTest" time="1.316">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/search/search_preferDirect.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[9]" classname="flightapp.FlightServiceTest" time="1.319">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/pay/pay_insufficient.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[10]" classname="flightapp.FlightServiceTest" time="1.304">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/pay/pay_already.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[11]" classname="flightapp.FlightServiceTest" time="1.359">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/pay/pay_indirectFlightsItinerary.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[12]" classname="flightapp.FlightServiceTest" time="1.992">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/create/create_multiple.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[13]" classname="flightapp.FlightServiceTest" time="0.701">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/create/create_basic.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[14]" classname="flightapp.FlightServiceTest" time="1.308">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/book/book_basic.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[15]" classname="flightapp.FlightServiceTest" time="0.663">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/book/book_withoutLogIn.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[16]" classname="flightapp.FlightServiceTest" time="1.294">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_wrongPassword.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[17]" classname="flightapp.FlightServiceTest" time="1.31">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_single.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[18]" classname="flightapp.FlightServiceTest" time="1.311">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_userDNE.test.txt
-]]></system-out>
-  </testcase>
-  <testcase name="runTest[19]" classname="flightapp.FlightServiceTest" time="1.967">
-    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/no_transaction/login/login_reloginAsSecondUser.test.txt
+  <testcase name="runTest[9]" classname="flightapp.FlightServiceTest" time="0.975">
+    <system-out><![CDATA[Running test file: /homes/iws/mspass/flightsapp/flightapp-startercode(1)/cases/transaction/pay/pay_wrongUser.test.txt
 ]]></system-out>
   </testcase>
 </testsuite>
