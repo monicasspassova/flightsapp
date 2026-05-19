@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -87,8 +88,8 @@ public class Query extends QueryAbstract {
 
   private static final String CHECK_BOOK_DAY_SQL = 
     "SELECT count(*) " +
-    "FROM Reservations_mspass " +
-    "WHERE fid1.day_of_month = ? AND userid = ?";
+    "FROM Reservations_mspass as R, Flights as F " +
+    "WHERE R.fid1 = F.fid AND F.day_of_month = ? AND userid = ?";
   private PreparedStatement checkBookDayStmt;
 
   private static final String BOOK_RESERVATION_SQL =
@@ -96,7 +97,34 @@ public class Query extends QueryAbstract {
     "VALUES (?, ?, 0, ?, ?)";
   private PreparedStatement bookReservationStmt;
 
+  private static final String FIND_RESERVATION_SQL = 
+    "SELECT * " +
+    "FROM Reservations_mspass as R, Flights as F " +
+    "WHERE R.rid = ? AND R.userid = ? AND R.paid = 0";
+  private PreparedStatement findReservationStmt;
 
+  private static final String FIND_PRICE_SQL =
+    "SELECT price " +
+    "FROM Flights " +
+    "WHERE fid = ?";
+  private PreparedStatement findPriceStmt;
+
+  private static final String GET_USER_BALANCE_SQL =
+    "SELECT balance " +
+    "FROM Users_mspass ";
+  private PreparedStatement getUserBalanceStmt;
+
+  private static final String UPDATE_PAID_RES_SQL =
+    "UPDATE Reservations_mspass " +
+    "SET paid = 1 " +
+    "WHERE rid = ?";
+  private PreparedStatement updatePaidResStmt;
+
+  private static final String UPDATE_USER_BALANCE_SQL =
+    "UPDATE Users_mspass " +
+    "SET balance = ? " +
+    "WHERE username = ?";
+  private PreparedStatement updateUserBalanceStmt;
 
   private static int rid = 1;
 
@@ -118,8 +146,8 @@ public class Query extends QueryAbstract {
    */
   public void clearTables() {
     try {
-      clearUsersStmt.executeQuery();
-      clearResStmt.executeQuery();
+      clearResStmt.executeUpdate();
+      clearUsersStmt.executeUpdate();
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -145,6 +173,12 @@ public class Query extends QueryAbstract {
     oneHopSearchStmt = conn.prepareStatement(ONE_HOP_SEARCH_SQL);
     twoHopSearchStmt = conn.prepareStatement(TWO_HOP_SEARCH_SQL);
     checkBookDayStmt = conn.prepareStatement(CHECK_BOOK_DAY_SQL);
+    bookReservationStmt = conn.prepareStatement(BOOK_RESERVATION_SQL);
+    findReservationStmt = conn.prepareStatement(FIND_RESERVATION_SQL);
+    findPriceStmt = conn.prepareStatement(FIND_PRICE_SQL);
+    getUserBalanceStmt = conn.prepareStatement(GET_USER_BALANCE_SQL);
+    updatePaidResStmt = conn.prepareStatement(UPDATE_PAID_RES_SQL);
+    updateUserBalanceStmt = conn.prepareStatement(UPDATE_USER_BALANCE_SQL);
 
   }
   
@@ -157,7 +191,7 @@ public class Query extends QueryAbstract {
         return "User already logged in\n";
       }
       
-
+      getPassStmt.clearParameters();
       getPassStmt.setString(1, username.toUpperCase());
       ResultSet pass = getPassStmt.executeQuery();
       pass.next();
@@ -188,8 +222,11 @@ public class Query extends QueryAbstract {
       }
 
       // check that user not already in db (need to execute query search)
+      checkUsersStmt.clearParameters();
       checkUsersStmt.setString(1, username.toUpperCase());
+
       ResultSet check = checkUsersStmt.executeQuery();
+
 
       if (check.next() && check.getInt(1) > 0 ){
         return "Failed to create user\n";
@@ -199,16 +236,21 @@ public class Query extends QueryAbstract {
       byte[] dbPass = PasswordUtils.saltAndHashPassword(password);
 
       // create user and insert into table
+      insertUserStmt.clearParameters();
       insertUserStmt.setString(1, username.toUpperCase());
       insertUserStmt.setBytes(2, dbPass);
       insertUserStmt.setInt(3, initAmount);
 
       insertUserStmt.executeUpdate();
 
+      checkUsersStmt.close();
+      insertUserStmt.close();
+
       return "Created user " + username +"\n";
 
-    } catch (Exception e) {
 
+    } catch (Exception e) {
+      e.printStackTrace();
       return "Failed to create user\n";
 
     }
@@ -234,6 +276,7 @@ public class Query extends QueryAbstract {
       // add together, sort in ascending order, then cut off rest 
 
       // one hop itineraries
+      oneHopSearchStmt.clearParameters();
       oneHopSearchStmt.setString(1, originCity);
       oneHopSearchStmt.setString(2, destinationCity);
       oneHopSearchStmt.setInt(3, dayOfMonth);
@@ -262,6 +305,7 @@ public class Query extends QueryAbstract {
       oneHopResults.close();
 
       if (!directFlight){
+        twoHopSearchStmt.clearParameters();
         twoHopSearchStmt.setString(1, originCity);
         twoHopSearchStmt.setString(2, destinationCity);
         twoHopSearchStmt.setInt(3, dayOfMonth);
@@ -365,7 +409,6 @@ public class Query extends QueryAbstract {
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_book(int itineraryId) {
-    // TODO: YOUR CODE HERE
     try{
 
       // check if logged in yet or not
@@ -374,29 +417,43 @@ public class Query extends QueryAbstract {
       }
 
       // check itId validity
-      if (searchResults.isEmpty() || searchResults.get(itineraryId-1) == null){
+      if (searchResults.isEmpty() || searchResults.get(itineraryId) == null){
         return "No such itinerary " + itineraryId + "\n";
       }
 
-      Object[] itinerary = searchResults.get(itineraryId-1);
+      Object[] itinerary = searchResults.get(itineraryId);
+
       // check if day already booked
+      checkBookDayStmt.clearParameters();
       checkBookDayStmt.setInt(1, (int) itinerary[3]);
       checkBookDayStmt.setString(2, loggedUser);
       ResultSet result = checkBookDayStmt.executeQuery();
       result.next();
 
-      if(result.getInt(0) > 0){
+      if(result.getInt(1) > 0){
         return "You cannot book two flights in the same day\n";
       }
 
       // can now book reservation (insert into table)
-      bookReservationStmt.setInt(1, rid++);
+      bookReservationStmt.clearParameters();
+      bookReservationStmt.setInt(1, rid);
       bookReservationStmt.setString(2, loggedUser);
       bookReservationStmt.setInt(3, (int)itinerary[2]);
-      bookReservationStmt.setInt(4, (int)itinerary[11]);
-      bookReservationStmt.executeQuery();
-    
-      return "Booked flight(s), reservationId: {}\n";
+
+      if ((int)itinerary[0] == 2){
+        bookReservationStmt.setInt(4, (int)itinerary[11]);
+      }
+      else {
+        bookReservationStmt.setNull(4, Types.INTEGER);
+      }
+
+      bookReservationStmt.executeUpdate();
+
+      rid += 1;
+      checkBookDayStmt.close();
+      bookReservationStmt.close();
+
+      return "Booked flight(s), reservation ID: " + (rid-1) + "\n";
 
     } catch (Exception e){
       return "Booking failed\n";
@@ -407,12 +464,69 @@ public class Query extends QueryAbstract {
   /* See QueryAbstract.java for javadoc */
   public String transaction_pay(int reservationId) {
     // TODO: YOUR CODE HERE
-    return "Failed to pay for reservation " + reservationId + "\n";
+    try{
+
+      // check if logged in yet or not
+      if (loggedUser == null){
+        return "Cannot pay, not logged in\n";
+      }
+
+      // find reservation
+      findReservationStmt.clearParameters();
+      findReservationStmt.setInt(1, reservationId);
+      findReservationStmt.setString(2, loggedUser);
+      ResultSet reservation = findReservationStmt.executeQuery();
+
+      if (reservation.isLast()){
+        return "Cannot find unpaid reservation " + reservationId + " under user: " + loggedUser + "\n";
+      }
+
+      int fid1 = reservation.getInt("fid1");
+      int fid2 = reservation.getInt("fid2");
+
+      int totalPrice = 0;
+      findPriceStmt.clearParameters();
+      findPriceStmt.setInt(1, fid1);
+      ResultSet res = findPriceStmt.executeQuery();
+
+      totalPrice += res.getInt("price");
+      findPriceStmt.setInt(1,fid2);
+      res = findPriceStmt.executeQuery();
+      if (res != null){
+        totalPrice += res.getInt("price");
+      }
+
+      // determine if we have enough to pay (get user balance)
+      ResultSet bal = getUserBalanceStmt.executeQuery();
+      int balance = bal.getInt("balance");
+
+      if (balance < totalPrice){
+        return "User has only " + balance + " in account but itinerary costs " + totalPrice + "\n";
+      }
+
+      // we have enough to pay, need to update reservations (paid col) and users (subtract balance)
+      balance = totalPrice - balance;
+
+      updatePaidResStmt.setInt(1, reservationId);
+      updatePaidResStmt.executeUpdate();
+
+      updateUserBalanceStmt.setInt(1, balance);
+      updateUserBalanceStmt.setString(2, loggedUser);
+
+      updateUserBalanceStmt.executeUpdate();
+      return "Paid reservation: " + reservationId + " remaining balance:" + balance + "\n";
+
+    } catch (Exception e){
+      return "Failed to pay for reservation " + reservationId + "\n";
+    }
+    
   }
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_reservations() {
     // TODO: YOUR CODE HERE
+
+
     return "Failed to retrieve reservations\n";
   }
 
