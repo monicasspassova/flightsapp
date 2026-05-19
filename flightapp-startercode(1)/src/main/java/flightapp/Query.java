@@ -89,7 +89,7 @@ public class Query extends QueryAbstract {
   private static final String CHECK_BOOK_DAY_SQL = 
     "SELECT count(*) " +
     "FROM Reservations_mspass as R, Flights as F " +
-    "WHERE R.fid1 = F.fid AND F.day_of_month = ? AND userid = ?";
+    "WHERE (R.fid1 = F.fid OR R.fid2 = F.fid) AND F.day_of_month = ? AND userid = ?";
   private PreparedStatement checkBookDayStmt;
 
   private static final String BOOK_RESERVATION_SQL =
@@ -258,9 +258,6 @@ public class Query extends QueryAbstract {
       insertUserStmt.setInt(3, initAmount);
 
       insertUserStmt.executeUpdate();
-
-      checkUsersStmt.close();
-      insertUserStmt.close();
 
       return "Created user " + username +"\n";
 
@@ -466,8 +463,6 @@ public class Query extends QueryAbstract {
       bookReservationStmt.executeUpdate();
 
       rid += 1;
-      checkBookDayStmt.close();
-      bookReservationStmt.close();
 
       return "Booked flight(s), reservation ID: " + (rid-1) + "\n";
 
@@ -542,9 +537,6 @@ public class Query extends QueryAbstract {
 
       updateUserBalanceStmt.executeUpdate();
 
-      getUserBalanceStmt.close();
-      updatePaidResStmt.close();
-      updateUserBalanceStmt.close();
       return "Paid reservation: " + reservationId + " remaining balance: " + balance + "\n";
 
     } catch (Exception e){
@@ -594,7 +586,7 @@ public class Query extends QueryAbstract {
         int fid = flightInfo.getInt("fid");
         int dayOfMonth = flightInfo.getInt("day_of_month");
         String cid = flightInfo.getString("cid");
-        int carrierNum = flightInfo.getInt("op_flight_carrier_num");
+        int carrierNum = flightInfo.getInt("op_carrier_flight_num");
         String origin = flightInfo.getString("origin_city");
         String dest = flightInfo.getString("dest_city");
         int duration = flightInfo.getInt("duration_mins");
@@ -602,14 +594,14 @@ public class Query extends QueryAbstract {
         int price = flightInfo.getInt("price");
 
         int rid = (int) rs[0];
-        String paid = (int) rs[1] == 0 ? "paid" : "unpaid";
+        String paid = (int) rs[1] == 1 ? "paid" : "unpaid";
 
-        sb.append("Reservation " + rid + " " + paid + "\n");
+        sb.append("Reservation " + rid + " (" + paid + "):\n");
         sb.append("    ID:" + fid + " Day:" + dayOfMonth + " Carrier:" + cid
           + " CarrierNum:" + carrierNum + " Origin:'" + origin + "' Dest:'" + dest
           + "' Duration:" + duration + " Capacity:" + capacity + " Price:" + price + "\n");
 
-        if ((int) rs[3] == -1){
+        if ((int) rs[3] == 0){
           continue;
         }
 
@@ -618,15 +610,15 @@ public class Query extends QueryAbstract {
         ResultSet flightInfo2 = getFlightInfoStmt.executeQuery();
 
         flightInfo2.next();
-        int fid2 = flightInfo.getInt("fid");
-        int dayOfMonth2 = flightInfo.getInt("day_of_month");
-        String cid2 = flightInfo.getString("cid");
-        int carrierNum2 = flightInfo.getInt("op_flight_carrier_num");
-        String origin2 = flightInfo.getString("origin_city");
-        String dest2 = flightInfo.getString("dest_city");
-        int duration2 = flightInfo.getInt("duration_mins");
+        int fid2 = flightInfo2.getInt("fid");
+        int dayOfMonth2 = flightInfo2.getInt("day_of_month");
+        String cid2 = flightInfo2.getString("cid");
+        int carrierNum2 = flightInfo2.getInt("op_carrier_flight_num");
+        String origin2 = flightInfo2.getString("origin_city");
+        String dest2 = flightInfo2.getString("dest_city");
+        int duration2 = flightInfo2.getInt("duration_mins");
         int capacity2 = getFlightCapacity((int)rs[3]);
-        int price2 = flightInfo.getInt("price");
+        int price2 = flightInfo2.getInt("price");
 
         sb.append("    ID:" + fid2 + " Day:" + dayOfMonth2 + " Carrier:" + cid2
           + " CarrierNum:" + carrierNum2 + " Origin:'" + origin2 + "' Dest:'" + dest2
@@ -635,12 +627,9 @@ public class Query extends QueryAbstract {
         
       }
 
-      getFlightInfoStmt.close();
-      getReservationsStmt.close();
-
       return sb.toString();
 
-      
+
     } catch (Exception e){
       return "Failed to retrieve reservations\n";
     }
