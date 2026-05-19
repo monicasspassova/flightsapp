@@ -227,13 +227,15 @@ public class Query extends QueryAbstract {
       getPassStmt.setString(1, username.toLowerCase());
       ResultSet pass = getPassStmt.executeQuery();
 
-      // end transaction
-      conn.commit();
-      conn.setAutoCommit(true);
+      
 
       // read password data
       pass.next();
       byte[] saltedHashPass = pass.getBytes(1);
+
+      // end transaction
+      conn.commit();
+      conn.setAutoCommit(true);
 
       // compare password to password in database
       if (PasswordUtils.plaintextMatchesSaltedHash(password, saltedHashPass)){
