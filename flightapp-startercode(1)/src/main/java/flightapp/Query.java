@@ -140,6 +140,12 @@ public class Query extends QueryAbstract {
     "WHERE fid = ?";
   private PreparedStatement getFlightInfoStmt;
 
+  private static final String CHECK_CAPACITY_SQL =
+    "SELECT count(*) " +
+    "FROM Reservations_mspass " +
+    "WHERE fid1 = ? OR fid2 = ?";
+  private PreparedStatement checkCapacityStmt;
+
   private static int rid = 1;
 
   //
@@ -196,6 +202,7 @@ public class Query extends QueryAbstract {
     updateUserBalanceStmt = conn.prepareStatement(UPDATE_USER_BALANCE_SQL);
     getReservationsStmt = conn.prepareStatement(GET_RESERVATIONS_SQL);
     getFlightInfoStmt = conn.prepareStatement(GET_FLIGHT_INFO_SQL);
+    checkCapacityStmt = conn.prepareStatement(CHECK_CAPACITY_SQL);
 
   }
   
@@ -229,20 +236,16 @@ public class Query extends QueryAbstract {
       }
 
     } catch (SQLException e){
-      String ret = "TXN exception";
       try {
-        if (conn != null) {
-          conn.rollback(); 
-          conn.setAutoCommit(true);
+        conn.rollback();
+        conn.setAutoCommit(true);
+        if (isRetryable(e)){
+          return transaction_login(username, password);
         }
-      } catch (SQLException rollbackEx) {
-        ret = "rollback exception";
-        rollbackEx.printStackTrace();
-
-      } finally {
-        return ret;
+      } catch (SQLException exc){
+        exc.printStackTrace();
       }
-
+      return "Login failed\n";
     } catch (Exception e) {
       return "Login failed\n";
     }
@@ -251,7 +254,6 @@ public class Query extends QueryAbstract {
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_createCustomer(String username, String password, int initAmount) {
-
     try{
       // check that initAmount >= 0 first
       if (initAmount < 0){
@@ -265,6 +267,8 @@ public class Query extends QueryAbstract {
       ResultSet check = checkUsersStmt.executeQuery();
 
       if (check.next() && check.getInt(1) > 0 ){
+        conn.rollback();
+        conn.setAutoCommit(true);
         return "Failed to create user\n";
       }      
 
@@ -282,22 +286,18 @@ public class Query extends QueryAbstract {
 
       return "Created user " + username +"\n";
 
-
     } catch (SQLException e){
-      String ret = "TXN exception";
       try {
-        if (conn != null) {
-          conn.rollback();
-          conn.setAutoCommit(true);
+        conn.rollback();
+        conn.setAutoCommit(true);
+        if (isRetryable(e)){
+          return transaction_createCustomer(username, password, initAmount);
         }
-      } catch (SQLException rollbackEx) {
-        ret = "rollback exception";
-        rollbackEx.printStackTrace();
-      } finally {
-        return ret;
+      } catch (SQLException exc){
+        exc.printStackTrace();
       }
-    }catch (Exception e) {
-      e.printStackTrace();
+      return "Failed to create user\n";
+    } catch (Exception e) {
       return "Failed to create user\n";
 
     }
@@ -484,6 +484,36 @@ public class Query extends QueryAbstract {
         return "You cannot book two flights in the same day\n";
       }
 
+      // check flight capacity
+      checkCapacityStmt.clearParameters();
+      checkCapacityStmt.setInt(1, (int)itinerary[2]);
+      checkCapacityStmt.setInt(2, (int)itinerary[2]);
+      ResultSet capacity = checkCapacityStmt.executeQuery();
+
+      capacity.next();
+      if(capacity.getInt(1) >= getFlightCapacity((int)itinerary[2])){
+        conn.rollback();
+        conn.setAutoCommit(true);
+        return "Booking failed\n";
+      }
+
+      if ((int) itinerary[0] == 2){
+        checkCapacityStmt.clearParameters();
+        checkCapacityStmt.setInt(1, (int)itinerary[11]);
+        checkCapacityStmt.setInt(2, (int)itinerary[11]);
+
+        capacity = checkCapacityStmt.executeQuery();
+
+        capacity.next();
+        if (capacity.getInt(1) >= getFlightCapacity((int)itinerary[11])){
+          conn.rollback();
+          conn.setAutoCommit(true);
+          return "Booking failed\n";
+        }
+      }
+      
+
+
       // can now book reservation (insert into table)
       bookReservationStmt.clearParameters();
       bookReservationStmt.setInt(1, rid);
@@ -498,26 +528,26 @@ public class Query extends QueryAbstract {
       }
 
       bookReservationStmt.executeUpdate();
+
       conn.commit();
       conn.setAutoCommit(true);
+
 
       rid += 1;
 
       return "Booked flight(s), reservation ID: " + (rid-1) + "\n";
 
     } catch (SQLException e){
-      String ret = "TXN exception";
       try {
-        if (conn != null) {
-          conn.rollback();
-          conn.setAutoCommit(true);
+        conn.rollback();
+        conn.setAutoCommit(true);
+        if (isRetryable(e)){
+          return transaction_book(itineraryId);
         }
-      } catch (SQLException rollbackEx) {
-        ret = "rollback exception";
-        rollbackEx.printStackTrace();
-      } finally {
-        return ret;
+      } catch (SQLException exc){
+        exc.printStackTrace();
       }
+      return "Booking failed\n";
     } catch (Exception e){
       return "Booking failed\n";
     }
@@ -592,21 +622,20 @@ public class Query extends QueryAbstract {
       conn.commit();
       conn.setAutoCommit(true);
 
+
       return "Paid reservation: " + reservationId + " remaining balance: " + balance + "\n";
 
     } catch (SQLException e){
-      String ret = "TXN exception";
       try {
-        if (conn != null) {
-          conn.rollback();
-          conn.setAutoCommit(true);
+        conn.rollback();
+        conn.setAutoCommit(true);
+        if (isRetryable(e)){
+          return transaction_pay(reservationId);
         }
-      } catch (SQLException rollbackEx) {
-        ret = "rollback exception";
-        rollbackEx.printStackTrace();
-      } finally {
-        return ret;
+      } catch (SQLException exc){
+        exc.printStackTrace();
       }
+      return "Failed to pay for reservation " + reservationId + "\n";
     } catch (Exception e){
 
       return "Failed to pay for reservation " + reservationId + "\n";
@@ -698,23 +727,20 @@ public class Query extends QueryAbstract {
 
       conn.commit();
       conn.setAutoCommit(true);
-      
+
       return sb.toString();
 
-
     } catch (SQLException e){
-      String ret = "TXN exception";
       try {
-        if (conn != null) {
-          conn.rollback();
-          conn.setAutoCommit(true);
+        conn.rollback();
+        conn.setAutoCommit(true);
+        if (isRetryable(e)){
+          return transaction_reservations();
         }
-      } catch (SQLException rollbackEx) {
-        ret = "rollback exception";
-        rollbackEx.printStackTrace();
-      } finally {
-        return ret;
+      } catch (SQLException exc){
+        exc.printStackTrace();
       }
+      return "Failed to retrieve reservations\n";
     } catch (Exception e){
       return "Failed to retrieve reservations\n";
     }
