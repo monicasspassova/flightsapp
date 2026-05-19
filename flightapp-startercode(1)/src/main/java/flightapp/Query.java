@@ -146,14 +146,13 @@ public class Query extends QueryAbstract {
     "WHERE fid1 = ? OR fid2 = ?";
   private PreparedStatement checkCapacityStmt;
 
-  private static int rid = 1;
 
   //
   // Instance variables
   //
   String loggedUser = null;
   ArrayList<Object[]> searchResults = new ArrayList<Object[]>();
-  
+  private static int rid = 1;
 
   protected Query() throws SQLException, IOException {
     prepareStatements();
