@@ -185,7 +185,6 @@ public class Query extends QueryAbstract {
     // functions, etc.
     flightCapacityStmt = conn.prepareStatement(FLIGHT_CAPACITY_SQL);
 
-    // TODO: continue adding every time we execute query
     clearUsersStmt = conn.prepareStatement(CLEAR_USERS_SQL);
     clearResStmt = conn.prepareStatement(CLEAR_RES_SQL);
     getPassStmt = conn.prepareStatement(GET_PASS_SQL);
@@ -211,22 +210,32 @@ public class Query extends QueryAbstract {
   /* See QueryAbstract.java for javadoc */
   public String transaction_login(String username, String password) {
     try{
+      // check if user is already logged in first
+      // then verify password
+      // then login user
+
+      // check if user is already logged in
       if (loggedUser != null){
         return "User already logged in\n";
       }
 
+      // start transaction
       conn.setAutoCommit(false);
 
+      // get password to compare from users database
       getPassStmt.clearParameters();
       getPassStmt.setString(1, username.toLowerCase());
       ResultSet pass = getPassStmt.executeQuery();
 
+      // end transaction
       conn.commit();
       conn.setAutoCommit(true);
 
+      // read password data
       pass.next();
       byte[] saltedHashPass = pass.getBytes(1);
 
+      // compare password to password in database
       if (PasswordUtils.plaintextMatchesSaltedHash(password, saltedHashPass)){
         loggedUser = username.toLowerCase();
         return "Logged in as " + username + "\n";
@@ -239,33 +248,43 @@ public class Query extends QueryAbstract {
       try {
         conn.rollback();
         conn.setAutoCommit(true);
+
+        // retry transaction if possible
         if (isRetryable(e)){
-          return transaction_login(username, password);
+          return transaction_login(username, password); 
         }
       } catch (SQLException exc){
         exc.printStackTrace();
       }
+
       return "Login failed\n";
+
     } catch (Exception e) {
       return "Login failed\n";
     }
-
   }
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_createCustomer(String username, String password, int initAmount) {
     try{
-      // check that initAmount >= 0 first
+      // check valid initial amount
+      // then check user doesn't already exist
+      // then create and store customer info
+      
+      // check that initial amount >= 0 first
       if (initAmount < 0){
         return "Failed to create user\n";
       }
 
+      // start transaction
       conn.setAutoCommit(false);
-      // check that user not already in db (need to execute query search)
+
+      // check that user not already in db
       checkUsersStmt.clearParameters();
       checkUsersStmt.setString(1, username.toLowerCase());
       ResultSet check = checkUsersStmt.executeQuery();
 
+      // if user already exists
       if (check.next() && check.getInt(1) > 0 ){
         conn.rollback();
         conn.setAutoCommit(true);
@@ -281,29 +300,32 @@ public class Query extends QueryAbstract {
       insertUserStmt.setBytes(2, dbPass);
       insertUserStmt.setInt(3, initAmount);
       insertUserStmt.executeUpdate();
+
+      // end transaction
       conn.commit();
       conn.setAutoCommit(true);
 
+      // successful user creation
       return "Created user " + username +"\n";
 
     } catch (SQLException e){
       try {
         conn.rollback();
         conn.setAutoCommit(true);
+
+        // retry transaction if possible
         if (isRetryable(e)){
           return transaction_createCustomer(username, password, initAmount);
         }
       } catch (SQLException exc){
         exc.printStackTrace();
       }
+
       return "Failed to create user\n";
+
     } catch (Exception e) {
       return "Failed to create user\n";
-
     }
-    
-
-
   }
 
   /* See QueryAbstract.java for javadoc */
@@ -311,16 +333,15 @@ public class Query extends QueryAbstract {
                                    boolean directFlight, int dayOfMonth,
                                    int numberOfItineraries) {
 
+    // initialize return string and itineraries to display
     StringBuffer sb = new StringBuffer();
     ArrayList<Object[]> itineraries = new ArrayList<>();
 
     try {
-
       // get direct results first
-
       // then if needed, get indirect
-
-      // add together, sort in ascending order, then cut off rest 
+      // add together and sort in ascending order
+      // no manual transaction needed since only reading data from immutable table
 
       // one hop itineraries
       oneHopSearchStmt.clearParameters();
@@ -332,10 +353,8 @@ public class Query extends QueryAbstract {
 
       while(oneHopResults.next()){
         Object[] it = {
-          1,
-          oneHopResults.getInt("duration_mins"), // total duration
-
-
+          1, // num of flights (direct)
+          oneHopResults.getInt("duration_mins"), // total duration for direct flights
           oneHopResults.getInt("fid"),
           oneHopResults.getInt("day_of_month"),
           oneHopResults.getString("cid"),
@@ -362,9 +381,11 @@ public class Query extends QueryAbstract {
 
         while(twoHopResults.next()){
           Object[] it = {
-            2,
-            twoHopResults.getInt("duration_mins") + twoHopResults.getInt("duration_mins2"),
+            2, // num of flights (indirect)
+            // total duration for indirect flights
+            twoHopResults.getInt("duration_mins") + twoHopResults.getInt("duration_mins2"), 
 
+            // flight 1 info
             twoHopResults.getInt("fid"),
             twoHopResults.getInt("day_of_month"),
             twoHopResults.getString("cid"),
@@ -375,6 +396,7 @@ public class Query extends QueryAbstract {
             twoHopResults.getInt("capacity"),
             twoHopResults.getInt("price"),
 
+            // flight 2 info
             twoHopResults.getInt("fid2"),
             twoHopResults.getInt("day_of_month"),
             twoHopResults.getString("cid2"),
@@ -393,13 +415,15 @@ public class Query extends QueryAbstract {
         twoHopResults.close();
       }
 
-    
+      // check if no search results
       if (itineraries.isEmpty()){
         return "No flights match your selection\n";
       }
 
+      // sort results in ascending order
       itineraries.sort(Comparator.comparingInt(a -> (int) a[1]));
       
+      // read itineraries and create return string
       int index = 0;
       for(Object[] it : itineraries) {
         int result_numFlights = (int) it[0];
@@ -424,10 +448,12 @@ public class Query extends QueryAbstract {
 
         index++;
 
+        // if direct flight, skip adding the second flight info
         if (result_numFlights == 1){
           continue;
         }
 
+        // add second flight info
         int result_fid2 = (int) it[11];
         int result_dayOfMonth2 = (int) it[12];
         String result_carrierId2 = (String) it[13];
@@ -451,13 +477,20 @@ public class Query extends QueryAbstract {
       return "Failed to search\n";
     }
 
+    // save most recent search results for reading later
     searchResults = itineraries;
+
     return sb.toString();
   }
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_book(int itineraryId) {
     try{
+      // check if user logged in first
+      // check itineraryId validity
+      // check if day already booked by user
+      // check flight capacity to see if user can book it
+      // then finally book reservation, update reservations table
 
       // check if logged in yet or not
       if (loggedUser == null){
@@ -469,9 +502,12 @@ public class Query extends QueryAbstract {
         return "No such itinerary " + itineraryId + "\n";
       }
 
+      // get itinerary info from search results
       Object[] itinerary = searchResults.get(itineraryId);
 
+      // start transaction
       conn.setAutoCommit(false);
+
       // check if day already booked
       checkBookDayStmt.clearParameters();
       checkBookDayStmt.setInt(1, (int) itinerary[3]);
@@ -497,11 +533,11 @@ public class Query extends QueryAbstract {
         return "Booking failed\n";
       }
 
+      // check second flight capacity if necessary
       if ((int) itinerary[0] == 2){
         checkCapacityStmt.clearParameters();
         checkCapacityStmt.setInt(1, (int)itinerary[11]);
         checkCapacityStmt.setInt(2, (int)itinerary[11]);
-
         capacity = checkCapacityStmt.executeQuery();
 
         capacity.next();
@@ -512,7 +548,6 @@ public class Query extends QueryAbstract {
         }
       }
       
-
 
       // can now book reservation (insert into table)
       bookReservationStmt.clearParameters();
@@ -529,12 +564,14 @@ public class Query extends QueryAbstract {
 
       bookReservationStmt.executeUpdate();
 
+      // end transaction
       conn.commit();
       conn.setAutoCommit(true);
 
-
+      // increment global rid after successful booking
       rid += 1;
 
+      // successful booking
       return "Booked flight(s), reservation ID: " + (rid-1) + "\n";
 
     } catch (SQLException e){
@@ -547,7 +584,9 @@ public class Query extends QueryAbstract {
       } catch (SQLException exc){
         exc.printStackTrace();
       }
+
       return "Booking failed\n";
+
     } catch (Exception e){
       return "Booking failed\n";
     }
@@ -557,26 +596,36 @@ public class Query extends QueryAbstract {
   /* See QueryAbstract.java for javadoc */
   public String transaction_pay(int reservationId) {
     try{
+      // check if a user is logged in
+      // get user's unpaid reservations
+      // get price for reservation
+      // check that user can pay for reservation
+      // finally pay reservation, update users and reservations tables
 
       // check if logged in yet or not
       if (loggedUser == null){
         return "Cannot pay, not logged in\n";
       }
 
+      // start transaction
       conn.setAutoCommit(false);
+
       // find reservation
       findReservationStmt.clearParameters();
       findReservationStmt.setInt(1, reservationId);
       findReservationStmt.setString(2, loggedUser);
       ResultSet reservation = findReservationStmt.executeQuery();
 
+      // check that there are unpaid reservations
       if (!reservation.next()){
         return "Cannot find unpaid reservation " + reservationId + " under user: " + loggedUser + "\n";
       }
 
+      // save fids for later
       int fid1 = reservation.getInt("fid1");
       int fid2 = reservation.getInt("fid2");
 
+      // determine if reservation is direct or not
       if (reservation.wasNull()){
         fid2 = -1;
       }
@@ -590,6 +639,7 @@ public class Query extends QueryAbstract {
       res.next();
       totalPrice += res.getInt("price");
       
+      // add second flight price if necessary
       if (fid2 != -1){
         findPriceStmt.setInt(1,fid2);
         res = findPriceStmt.executeQuery();
@@ -598,7 +648,6 @@ public class Query extends QueryAbstract {
       }
 
       // determine if we have enough to pay (get user balance)
-
       getUserBalanceStmt.clearParameters();
       getUserBalanceStmt.setString(1, loggedUser);
       ResultSet bal = getUserBalanceStmt.executeQuery();
@@ -606,6 +655,7 @@ public class Query extends QueryAbstract {
       bal.next();
       int balance = bal.getInt("balance");
 
+      // check if user doesn't have adequate balance
       if (balance < totalPrice){
         return "User has only " + balance + " in account but itinerary costs " + totalPrice + "\n";
       }
@@ -619,25 +669,30 @@ public class Query extends QueryAbstract {
       updateUserBalanceStmt.setInt(1, balance);
       updateUserBalanceStmt.setString(2, loggedUser);
       updateUserBalanceStmt.executeUpdate();
+
+      // end transaction
       conn.commit();
       conn.setAutoCommit(true);
 
-
+      // successful pay
       return "Paid reservation: " + reservationId + " remaining balance: " + balance + "\n";
 
     } catch (SQLException e){
       try {
         conn.rollback();
         conn.setAutoCommit(true);
-        if (isRetryable(e)){
+
+        // retry transaction if possible
+        if (isRetryable(e)){ 
           return transaction_pay(reservationId);
         }
       } catch (SQLException exc){
         exc.printStackTrace();
       }
-      return "Failed to pay for reservation " + reservationId + "\n";
-    } catch (Exception e){
 
+      return "Failed to pay for reservation " + reservationId + "\n";
+
+    } catch (Exception e){
       return "Failed to pay for reservation " + reservationId + "\n";
     }
     
@@ -645,25 +700,34 @@ public class Query extends QueryAbstract {
 
   /* See QueryAbstract.java for javadoc */
   public String transaction_reservations() {
+    // check if logged in
+    // then get reservations for user
+    // get flight info for each reservation
+
+    // initialize return string and user reservations list 
     StringBuffer sb = new StringBuffer();
     ArrayList<Object[]> reservations = new ArrayList<>();
 
     try{
-
       // check if logged in yet or not
       if (loggedUser == null){
         return "Cannot view reservations, not logged in\n";
       }
 
+      // start transaction
       conn.setAutoCommit(false);
+
+      // get user reservations
       getReservationsStmt.clearParameters();
       getReservationsStmt.setString(1, loggedUser);
       ResultSet resResults = getReservationsStmt.executeQuery();
 
+      // check if user has any reservations
       if (!resResults.next()){
         return "No reservations found\n";
       }
 
+      // get reservation info
       do {
         Object[] rsv = {
           resResults.getInt("rid"),
@@ -675,11 +739,13 @@ public class Query extends QueryAbstract {
         reservations.add(rsv);
       } while (resResults.next());
 
+      // read reservation info, find flight info
       for (Object[] rs : reservations){
         getFlightInfoStmt.clearParameters();
         getFlightInfoStmt.setInt(1, (int) rs[2]);
         ResultSet flightInfo = getFlightInfoStmt.executeQuery();
 
+        // read flight info
         flightInfo.next();
         int fid = flightInfo.getInt("fid");
         int dayOfMonth = flightInfo.getInt("day_of_month");
@@ -691,6 +757,7 @@ public class Query extends QueryAbstract {
         int capacity = getFlightCapacity((int)rs[2]);
         int price = flightInfo.getInt("price");
 
+        // create/add reservation string
         int rid = (int) rs[0];
         String paid = (int) rs[1] == 1 ? "paid" : "unpaid";
 
@@ -699,10 +766,12 @@ public class Query extends QueryAbstract {
           + " CarrierNum:" + carrierNum + " Origin:'" + origin + "' Dest:'" + dest
           + "' Duration:" + duration + " Capacity:" + capacity + " Price:" + price + "\n");
 
+        // check if reservation is direct
         if ((int) rs[3] == 0){
           continue;
         }
 
+        // continue getting flight info/adding to string for second flight if necessary
         getFlightInfoStmt.clearParameters();
         getFlightInfoStmt.setInt(1, (int) rs[3]);
         ResultSet flightInfo2 = getFlightInfoStmt.executeQuery();
@@ -722,9 +791,9 @@ public class Query extends QueryAbstract {
           + " CarrierNum:" + carrierNum2 + " Origin:'" + origin2 + "' Dest:'" + dest2
           + "' Duration:" + duration2 + " Capacity:" + capacity2 + " Price:" + price2 + "\n");
 
-        
       }
 
+      // end transaction
       conn.commit();
       conn.setAutoCommit(true);
 
@@ -734,6 +803,8 @@ public class Query extends QueryAbstract {
       try {
         conn.rollback();
         conn.setAutoCommit(true);
+
+        // retry transaction if possible
         if (isRetryable(e)){
           return transaction_reservations();
         }
