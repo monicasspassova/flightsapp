@@ -127,6 +127,18 @@ public class Query extends QueryAbstract {
     "WHERE username = ?";
   private PreparedStatement updateUserBalanceStmt;
 
+  private static final String GET_RESERVATIONS_SQL = 
+    "SELECT * " +
+    "FROM Reservations_mspass " +
+    "WHERE userid = ?";
+  private PreparedStatement getReservationsStmt;
+
+  private static final String GET_FLIGHT_INFO_SQL = 
+    "SELECT fid, day_of_month, cid, op_carrier_flight_num, origin_city, dest_city, duration_mins, price " +
+    "FROM Flights " +
+    "WHERE fid = ?";
+  private PreparedStatement getFlightInfoStmt;
+
   private static int rid = 1;
 
   //
@@ -181,6 +193,8 @@ public class Query extends QueryAbstract {
     getUserBalanceStmt = conn.prepareStatement(GET_USER_BALANCE_SQL);
     updatePaidResStmt = conn.prepareStatement(UPDATE_PAID_RES_SQL);
     updateUserBalanceStmt = conn.prepareStatement(UPDATE_USER_BALANCE_SQL);
+    getReservationsStmt = conn.prepareStatement(GET_RESERVATIONS_SQL);
+    getFlightInfoStmt = conn.prepareStatement(GET_FLIGHT_INFO_SQL);
 
   }
   
@@ -527,6 +541,10 @@ public class Query extends QueryAbstract {
       updateUserBalanceStmt.setString(2, loggedUser);
 
       updateUserBalanceStmt.executeUpdate();
+
+      getUserBalanceStmt.close();
+      updatePaidResStmt.close();
+      updateUserBalanceStmt.close();
       return "Paid reservation: " + reservationId + " remaining balance: " + balance + "\n";
 
     } catch (Exception e){
@@ -538,9 +556,95 @@ public class Query extends QueryAbstract {
   /* See QueryAbstract.java for javadoc */
   public String transaction_reservations() {
     // TODO: YOUR CODE HERE
+    StringBuffer sb = new StringBuffer();
+    ArrayList<Object[]> reservations = new ArrayList<>();
 
-    
-    return "Failed to retrieve reservations\n";
+    try{
+
+      // check if logged in yet or not
+      if (loggedUser == null){
+        return "Cannot view reservations, not logged in\n";
+      }
+
+      getReservationsStmt.clearParameters();
+      getReservationsStmt.setString(1, loggedUser);
+      ResultSet resResults = getReservationsStmt.executeQuery();
+
+      if (!resResults.next()){
+        return "No reservations found\n";
+      }
+
+      do {
+        Object[] rsv = {
+          resResults.getInt("rid"),
+          resResults.getInt("paid"),
+          resResults.getInt("fid1"),
+          resResults.getInt("fid2")
+        };
+
+        reservations.add(rsv);
+      } while (resResults.next());
+
+      for (Object[] rs : reservations){
+        getFlightInfoStmt.clearParameters();
+        getFlightInfoStmt.setInt(1, (int) rs[2]);
+        ResultSet flightInfo = getFlightInfoStmt.executeQuery();
+
+        flightInfo.next();
+        int fid = flightInfo.getInt("fid");
+        int dayOfMonth = flightInfo.getInt("day_of_month");
+        String cid = flightInfo.getString("cid");
+        int carrierNum = flightInfo.getInt("op_flight_carrier_num");
+        String origin = flightInfo.getString("origin_city");
+        String dest = flightInfo.getString("dest_city");
+        int duration = flightInfo.getInt("duration_mins");
+        int capacity = getFlightCapacity((int)rs[2]);
+        int price = flightInfo.getInt("price");
+
+        int rid = (int) rs[0];
+        String paid = (int) rs[1] == 0 ? "paid" : "unpaid";
+
+        sb.append("Reservation " + rid + " " + paid + "\n");
+        sb.append("    ID:" + fid + " Day:" + dayOfMonth + " Carrier:" + cid
+          + " CarrierNum:" + carrierNum + " Origin:'" + origin + "' Dest:'" + dest
+          + "' Duration:" + duration + " Capacity:" + capacity + " Price:" + price + "\n");
+
+        if ((int) rs[3] == -1){
+          continue;
+        }
+
+        getFlightInfoStmt.clearParameters();
+        getFlightInfoStmt.setInt(1, (int) rs[3]);
+        ResultSet flightInfo2 = getFlightInfoStmt.executeQuery();
+
+        flightInfo2.next();
+        int fid2 = flightInfo.getInt("fid");
+        int dayOfMonth2 = flightInfo.getInt("day_of_month");
+        String cid2 = flightInfo.getString("cid");
+        int carrierNum2 = flightInfo.getInt("op_flight_carrier_num");
+        String origin2 = flightInfo.getString("origin_city");
+        String dest2 = flightInfo.getString("dest_city");
+        int duration2 = flightInfo.getInt("duration_mins");
+        int capacity2 = getFlightCapacity((int)rs[3]);
+        int price2 = flightInfo.getInt("price");
+
+        sb.append("    ID:" + fid2 + " Day:" + dayOfMonth2 + " Carrier:" + cid2
+          + " CarrierNum:" + carrierNum2 + " Origin:'" + origin2 + "' Dest:'" + dest2
+          + "' Duration:" + duration2 + " Capacity:" + capacity2 + " Price:" + price2 + "\n");
+
+        
+      }
+
+      getFlightInfoStmt.close();
+      getReservationsStmt.close();
+
+      return sb.toString();
+
+      
+    } catch (Exception e){
+      return "Failed to retrieve reservations\n";
+    }
+
   }
 
   /**
