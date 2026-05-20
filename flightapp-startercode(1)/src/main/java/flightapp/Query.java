@@ -146,13 +146,16 @@ public class Query extends QueryAbstract {
     "WHERE fid1 = ? OR fid2 = ?";
   private PreparedStatement checkCapacityStmt;
 
+  private static final String GET_MAX_RID_SQL =
+    "SELECT MAX(rid) FROM Reservations_mspass";
+  private PreparedStatement getMaxRidStmt;
+
 
   //
   // Instance variables
   //
   String loggedUser = null;
   ArrayList<Object[]> searchResults = new ArrayList<Object[]>();
-  private static int rid = 1;
 
   protected Query() throws SQLException, IOException {
     prepareStatements();
@@ -167,7 +170,6 @@ public class Query extends QueryAbstract {
     try {
       clearResStmt.executeUpdate();
       clearUsersStmt.executeUpdate();
-      rid = 1;
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -201,6 +203,7 @@ public class Query extends QueryAbstract {
     getReservationsStmt = conn.prepareStatement(GET_RESERVATIONS_SQL);
     getFlightInfoStmt = conn.prepareStatement(GET_FLIGHT_INFO_SQL);
     checkCapacityStmt = conn.prepareStatement(CHECK_CAPACITY_SQL);
+    getMaxRidStmt = conn.prepareStatement(GET_MAX_RID_SQL);
 
   }
   
@@ -557,9 +560,14 @@ public class Query extends QueryAbstract {
       }
       
 
+      // get next rid for table
+      ResultSet ridResult = getMaxRidStmt.executeQuery();
+      ridResult.next();
+      int nextRid = ridResult.getInt(1) +1;
+
       // can now book reservation (insert into table)
       bookReservationStmt.clearParameters();
-      bookReservationStmt.setInt(1, rid);
+      bookReservationStmt.setInt(1, nextRid);
       bookReservationStmt.setString(2, loggedUser);
       bookReservationStmt.setInt(3, (int)itinerary[2]);
 
@@ -576,11 +584,8 @@ public class Query extends QueryAbstract {
       conn.commit();
       conn.setAutoCommit(true);
 
-      // increment global rid after successful booking
-      rid += 1;
-
       // successful booking
-      return "Booked flight(s), reservation ID: " + (rid-1) + "\n";
+      return "Booked flight(s), reservation ID: " + nextRid + "\n";
 
     } catch (SQLException e){
       try {
