@@ -504,7 +504,7 @@ public class Query extends QueryAbstract {
       }
 
       // check itId validity
-      if (searchResults.isEmpty() || searchResults.get(itineraryId) == null || itineraryId >= searchResults.size()){
+      if (searchResults.isEmpty() || itineraryId < 0 || itineraryId >= searchResults.size()){
         return "No such itinerary " + itineraryId + "\n";
       }
 
@@ -523,6 +523,8 @@ public class Query extends QueryAbstract {
       result.next();
 
       if(result.getInt(1) > 0){
+        conn.rollback();
+        conn.setAutoCommit(true);
         return "You cannot book two flights in the same day\n";
       }
 
@@ -624,6 +626,8 @@ public class Query extends QueryAbstract {
 
       // check that there are unpaid reservations
       if (!reservation.next()){
+        conn.rollback();
+        conn.setAutoCommit(true);
         return "Cannot find unpaid reservation " + reservationId + " under user: " + loggedUser + "\n";
       }
 
@@ -663,6 +667,8 @@ public class Query extends QueryAbstract {
 
       // check if user doesn't have adequate balance
       if (balance < totalPrice){
+        conn.rollback();
+        conn.setAutoCommit(true);
         return "User has only " + balance + " in account but itinerary costs " + totalPrice + "\n";
       }
 
@@ -730,6 +736,8 @@ public class Query extends QueryAbstract {
 
       // check if user has any reservations
       if (!resResults.next()){
+        conn.rollback();
+        conn.setAutoCommit(true);
         return "No reservations found\n";
       }
 

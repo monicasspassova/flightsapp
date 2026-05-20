@@ -1,7 +1,7 @@
 # Empty flight search
 
 # commands:
-search "Seattle, WA" "Narnia" 1 14 10
+search "Seattle, WA" "Seattle, WA" 1 1 1
 quit
 *
 

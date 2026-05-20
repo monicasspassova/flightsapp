@@ -6,6 +6,9 @@ create user2 user2 200
 create user1 user3 100
 create user3 user3 -100
 create user4 user4 400
+create user5 user5 500
+create user2 user2 200
+create user6 user6 600
 quit
 *
 
@@ -15,5 +18,8 @@ Created user user2
 Failed to create user
 Failed to create user
 Created user user4
+Created user user5
+Failed to create user
+Created user user6
 Goodbye
 *
